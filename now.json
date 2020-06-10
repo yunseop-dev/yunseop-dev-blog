@@ -1,5 +1,10 @@
 {
   "version": 2,
-  "name": "yunseop-dev-blog
-  "builds": [{ "src": "next.config.js", "use": "@now/next" }]
+  "name": "yunseop-dev-blog",
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@now/next"
+    }
+  ]
 }

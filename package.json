@@ -13,7 +13,9 @@
     "@zeit/next-typescript": "^1.1.1",
     "next": "^9.4.4",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "styled-components": "^5.1.1",
+    "styled-reset": "^4.1.6"
   },
   "devDependencies": {
     "@types/node": "^14.0.13",

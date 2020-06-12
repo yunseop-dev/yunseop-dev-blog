@@ -6,14 +6,8 @@ type LayoutProps = {
   title?: string;
 };
 
-const layoutStyle = {
-  margin: 20,
-  padding: 20,
-  border: "1px solid #DDD"
-};
-
 const Layout: React.FunctionComponent<LayoutProps> = ({ children, title }) => (
-  <div style={layoutStyle}>
+  <div>
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />

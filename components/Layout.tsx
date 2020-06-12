@@ -1,13 +1,18 @@
 import * as React from "react";
 import Link from "next/link";
 import Head from "next/head";
+import styled from "styled-components";
 
 type LayoutProps = {
   title?: string;
 };
+const Wrapper = styled.div`
+  max-width: 1024px;
+  margin: 0px auto;
+`;
 
 const Layout: React.FunctionComponent<LayoutProps> = ({ children, title }) => (
-  <div>
+  <Wrapper>
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
@@ -26,7 +31,7 @@ const Layout: React.FunctionComponent<LayoutProps> = ({ children, title }) => (
       </nav>
     </header>
     {children}
-  </div>
+  </Wrapper>
 );
 
 export default Layout;

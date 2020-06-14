@@ -1,12 +1,24 @@
 import React from "react";
-
+import { NextPage } from "next";
 import Layout from "../components/Layout";
-const Index: React.FunctionComponent = () => {
-  return (
-    <Layout title="Home">
-      <h1>Hello Next.js 👋</h1>
-    </Layout>
-  );
+import { HomeData, getData } from "../data/home";
+
+type Props = HomeData;
+
+const Index: NextPage<Props> = ({ posts }) => (
+  <Layout>
+    <div>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>{post.title}</li>
+        ))}
+      </ul>
+    </div>
+  </Layout>
+);
+
+Index.getInitialProps = () => {
+  return getData();
 };
 
 export default Index;

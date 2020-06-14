@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   margin: 0px auto;
 `;
 
-const Layout: React.FunctionComponent<LayoutProps> = ({ children, title }) => (
+const Layout: React.FunctionComponent<LayoutProps> = ({ children, title = "Yunseop's Blog" }) => (
   <Wrapper>
     <Reset />
     <Head>

@@ -1,8 +1,7 @@
-const withTypescript = require('@zeit/next-typescript')
-module.exports = withTypescript({
-    target: 'serverless',
-    webpack(config, options) {
-        config.plugins = config.plugins || []
-        return config
-    }
-})
+module.exports = {
+  target: "serverless",
+  webpack(config, options) {
+    config.plugins = config.plugins || [];
+    return config;
+  },
+};

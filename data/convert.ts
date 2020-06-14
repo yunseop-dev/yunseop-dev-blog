@@ -24,7 +24,7 @@ interface HeaderOutput extends OutputCommon {
   value: string;
 }
 
-type BlockOutput = TextOutput | ImageOutput | HeaderOutput;
+type BlockOutput = TextOutput | ImageOutput | HeaderOutput | undefined;
 export type ConvertBlockOutput = BlockOutput;
 
 interface Block {

@@ -21,12 +21,11 @@ export const getData = async ({ pageId }: Input): Promise<Output> => {
   const page = blocks[pageId];
   const emoji = page.value.format?.page_icon;
   const titleText = page.value.properties.title[0][0];
-  const title = emoji ? emoji + " " + titleText : titleText;
-  //   const tags = page.value?.properties["!'(w"][0][0].split(",");
-  const tags: string[] = [];
+  const title = emoji ? `${emoji} ${titleText}` : titleText;
+  const tags = page.value?.properties?.["!'(w"]?.[0]?.[0].split(",") || [];
 
   const contentIds: string[] = page.value.content;
-  const availableType = ["image", "text", "header"];
+  const availableType = ["image", "text", "header", "bulleted_list"];
 
   const sections = contentIds
     .map((id) => blocks[id])

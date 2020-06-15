@@ -19,7 +19,10 @@ const Post: NextPage<Props> = ({
   return (
     <Layout>
       <div>
-        {createdTime}/{lastEditedTime}/{tags}/{title}/
+        <h1>제목:{title}</h1>
+        <h2>생성일:{createdTime}</h2>
+        <h3>수정일:{lastEditedTime}</h3>
+        <pre>태그:{tags}</pre>
         <PostSections sections={sections}></PostSections>
       </div>
     </Layout>

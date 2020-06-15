@@ -24,7 +24,18 @@ interface HeaderOutput extends OutputCommon {
   value: string;
 }
 
-type BlockOutput = TextOutput | ImageOutput | HeaderOutput | undefined;
+interface BulletedListOutput extends OutputCommon {
+  type: "bulleted_list";
+  value: TextValue[];
+  children?: string[];
+}
+
+type BlockOutput =
+  | TextOutput
+  | ImageOutput
+  | HeaderOutput
+  | BulletedListOutput
+  | undefined;
 export type ConvertBlockOutput = BlockOutput;
 
 interface Block {
@@ -34,6 +45,7 @@ interface Block {
     properties: any;
     created_time: number;
     last_edited_time: number;
+    content?: string[];
   };
 }
 
@@ -64,6 +76,15 @@ export const convertBlock = (block: Block): BlockOutput => {
         value: block.value.properties.title[0][0],
         createdTime: block.value.created_time,
         lastEditedTime: block.value.last_edited_time,
+      };
+    case "bulleted_list":
+      return {
+        id: block.value.id,
+        type: block.value.type,
+        value: block.value.properties ? block.value.properties.title : [[""]],
+        createdTime: block.value.created_time,
+        lastEditedTime: block.value.last_edited_time,
+        children: block.value.content,
       };
     default:
       break;

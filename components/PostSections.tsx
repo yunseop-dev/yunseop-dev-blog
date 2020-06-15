@@ -17,9 +17,12 @@ export const renderTextSection = (value: TextValue[]) => {
           case "c":
             return <code key={i + "-" + i2}>{a}</code>;
           case "a":
+            const href = c[1].includes("https://")
+              ? c[1].replace("https:", "")
+              : c[1];
             return (
-              <Link key={i + "-" + i2} href={c[1]}>
-                {a}
+              <Link key={i + "-" + i2} href={href}>
+                <a>{a}</a>
               </Link>
             );
           default:
@@ -36,6 +39,8 @@ const renderSection = (section: Props["sections"][0]) => {
       return <h6 key={section.id}>{section.value}</h6>;
     case "text":
       return <div key={section.id}>{renderTextSection(section.value)}</div>;
+    case "bulleted_list":
+      return <li key={section.id}>{renderTextSection(section.value)}</li>;
     case "image":
       return (
         <img

@@ -1,5 +1,5 @@
 import { loadPageChunk } from "./notion";
-import { convertBlock, ConvertBlockOutput } from "./convert";
+import { convertBlock, ConvertBlockOutput, Block } from "./convert";
 
 interface Input {
   pageId: string;
@@ -24,12 +24,10 @@ export const getData = async ({ pageId }: Input): Promise<Output> => {
   const title = emoji ? `${emoji} ${titleText}` : titleText;
   const tags = page.value?.properties?.["!'(w"]?.[0]?.[0].split(",") || [];
 
-  const contentIds: string[] = page.value.content;
   const availableType = ["image", "text", "header", "bulleted_list"];
-
-  const sections = contentIds
-    .map((id) => blocks[id])
-    .filter((block) => availableType.indexOf(block.value.type) > -1)
+  const blockList: Array<Block> = Object.values(blocks);
+  const sections = blockList
+    .filter((block: Block) => availableType.indexOf(block.value.type) > -1)
     .map(convertBlock);
 
   return {

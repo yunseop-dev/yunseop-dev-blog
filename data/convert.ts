@@ -27,7 +27,6 @@ interface HeaderOutput extends OutputCommon {
 interface BulletedListOutput extends OutputCommon {
   type: "bulleted_list";
   value: TextValue[];
-  children?: string[];
 }
 
 type BlockOutput =
@@ -38,7 +37,7 @@ type BlockOutput =
   | undefined;
 export type ConvertBlockOutput = BlockOutput;
 
-interface Block {
+export interface Block {
   value: {
     id: string;
     type: string;
@@ -84,7 +83,6 @@ export const convertBlock = (block: Block): BlockOutput => {
         value: block.value.properties ? block.value.properties.title : [[""]],
         createdTime: block.value.created_time,
         lastEditedTime: block.value.last_edited_time,
-        children: block.value.content,
       };
     default:
       break;

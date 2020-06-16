@@ -2,6 +2,7 @@ interface OutputCommon {
   id: string;
   createdTime: number;
   lastEditedTime: number;
+  depth: number;
 }
 
 export type TextValue = Array<string | Array<string[]>>;
@@ -45,6 +46,7 @@ export interface Block {
     created_time: number;
     last_edited_time: number;
     content?: string[];
+    depth: number;
   };
 }
 
@@ -52,6 +54,7 @@ export const convertBlock = (block: Block): BlockOutput => {
   switch (block.value.type) {
     case "text":
       return {
+        depth: block.value.depth,
         id: block.value.id,
         type: block.value.type,
         value: block.value.properties ? block.value.properties.title : [[""]],
@@ -60,6 +63,7 @@ export const convertBlock = (block: Block): BlockOutput => {
       };
     case "image":
       return {
+        depth: block.value.depth,
         id: block.value.id,
         type: block.value.type,
         value: `/api/image?url=${encodeURIComponent(
@@ -70,6 +74,7 @@ export const convertBlock = (block: Block): BlockOutput => {
       };
     case "header":
       return {
+        depth: block.value.depth,
         id: block.value.id,
         type: block.value.type,
         value: block.value.properties.title[0][0],
@@ -78,6 +83,7 @@ export const convertBlock = (block: Block): BlockOutput => {
       };
     case "bulleted_list":
       return {
+        depth: block.value.depth,
         id: block.value.id,
         type: block.value.type,
         value: block.value.properties ? block.value.properties.title : [[""]],

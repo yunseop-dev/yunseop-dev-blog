@@ -10,11 +10,12 @@ import { getBaseUrl } from "../../urlHelper";
 type Props = PostData;
 
 const Post: NextPage<Props> = ({
+  id,
   createdTime,
   lastEditedTime,
   tags,
   title,
-  sections,
+  pageChunks,
 }) => {
   return (
     <Layout>
@@ -23,7 +24,7 @@ const Post: NextPage<Props> = ({
         <h2>생성일:{createdTime}</h2>
         <h3>수정일:{lastEditedTime}</h3>
         <pre>태그:{tags}</pre>
-        <PostSections sections={sections}></PostSections>
+        <PostSections id={id} pageChunks={pageChunks}></PostSections>
       </div>
     </Layout>
   );

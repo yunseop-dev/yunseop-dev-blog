@@ -1,10 +1,16 @@
 import React from "react";
-import { TextValue } from "../data/convert";
+import {
+  TextValue,
+  ConvertBlockOutput,
+  convertBlock,
+  Block,
+} from "../data/convert";
 import { PostData } from "../data/post";
 import Link from "next/link";
 
 interface Props {
-  sections: PostData["sections"];
+  id: string;
+  pageChunks: PostData["pageChunks"];
 }
 
 export const renderTextSection = (value: TextValue[]) => {
@@ -33,7 +39,7 @@ export const renderTextSection = (value: TextValue[]) => {
   });
 };
 
-const renderSection = (section: Props["sections"][0]) => {
+const renderSection = (section: ConvertBlockOutput) => {
   switch (section?.type) {
     case "header":
       return <h6 key={section.id}>{section.value}</h6>;
@@ -54,8 +60,26 @@ const renderSection = (section: Props["sections"][0]) => {
   }
 };
 
-const PostSections = (props: Props) => (
-  <div>{props.sections.map(renderSection)}</div>
-);
+const generateSection = (content: string[], pageChunks: any) =>
+  (content || [])
+    .map((id: string) => pageChunks[id])
+    .map((block: Block): any => ({
+      block: renderSection(convertBlock(block)),
+      children: generateSection(block.value.content || [], pageChunks),
+    }))
+    .map((value) => (
+      <div style={{ padding: "0 10px" }}>
+        {value.block}
+        <div style={{ padding: "0 10px" }}>{value.children}</div>
+      </div>
+    ));
+
+const PostSections = (props: Props) => {
+  const result = generateSection(
+    props.pageChunks[props.id].value.content,
+    props.pageChunks
+  );
+  return <div>{result}</div>;
+};
 
 export default PostSections;

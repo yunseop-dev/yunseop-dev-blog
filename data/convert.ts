@@ -28,12 +28,17 @@ interface BulletedListOutput extends OutputCommon {
   type: "bulleted_list";
   value: TextValue[];
 }
+interface NumberedListOutput extends OutputCommon {
+  type: "numbered_list";
+  value: TextValue[];
+}
 
 type BlockOutput =
   | TextOutput
   | ImageOutput
   | HeaderOutput
   | BulletedListOutput
+  | NumberedListOutput
   | undefined;
 export type ConvertBlockOutput = BlockOutput;
 
@@ -77,6 +82,14 @@ export const convertBlock = (block: Block): BlockOutput => {
         lastEditedTime: block.value.last_edited_time,
       };
     case "bulleted_list":
+      return {
+        id: block.value.id,
+        type: block.value.type,
+        value: block.value.properties ? block.value.properties.title : [[""]],
+        createdTime: block.value.created_time,
+        lastEditedTime: block.value.last_edited_time,
+      };
+    case "numbered_list":
       return {
         id: block.value.id,
         type: block.value.type,

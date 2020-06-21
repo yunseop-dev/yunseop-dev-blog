@@ -7,6 +7,8 @@ import {
 } from "../data/convert";
 import { PostData } from "../data/post";
 import Link from "next/link";
+const initial = require("lodash/initial");
+const last = require("lodash/last");
 
 interface Props {
   id: string;
@@ -47,6 +49,8 @@ const renderSection = (section: ConvertBlockOutput) => {
       return <div key={section.id}>{renderTextSection(section.value)}</div>;
     case "bulleted_list":
       return <li key={section.id}>{renderTextSection(section.value)}</li>;
+    case "numbered_list":
+      return <li key={section.id}>{renderTextSection(section.value)}</li>;
     case "image":
       return (
         <img
@@ -60,26 +64,89 @@ const renderSection = (section: ConvertBlockOutput) => {
   }
 };
 
+const myFunc = (value: any, index: number, arr: Array<any>) => {
+  if (Array.isArray(value) && value[0].block.value.type === "bulleted_list") {
+    return (
+      <ul key={index} style={{ padding: "0 10px" }}>
+        {value.map(myFunc)}
+      </ul>
+    );
+  } else if (
+    Array.isArray(value) &&
+    value[0].block.value.type === "numbered_list"
+  ) {
+    return (
+      <ol key={index} style={{ padding: "0 10px" }}>
+        {value.map(myFunc)}
+      </ol>
+    );
+  }
+  return (
+    <React.Fragment key={index}>
+      {renderSection(convertBlock(value.block))}
+      {value.children.length > 0 && (
+        <React.Fragment>{value.children}</React.Fragment>
+      )}
+    </React.Fragment>
+  );
+};
+
 const generateSection = (content: string[], pageChunks: any) =>
   (content || [])
     .map((id: string) => pageChunks[id])
     .map((block: Block): any => ({
-      block: renderSection(convertBlock(block)),
+      block,
       children: generateSection(block.value.content || [], pageChunks),
     }))
-    .map((value) => (
-      <div style={{ padding: "0 10px" }}>
-        {value.block}
-        <div style={{ padding: "0 10px" }}>{value.children}</div>
-      </div>
-    ));
+    .reduce((prev, curr) => {
+      const lastItem: any = last(prev);
+      if (
+        curr.block.value.type === "bulleted_list" &&
+        !Array.isArray(lastItem)
+      ) {
+        return [...prev, [curr]];
+      } else if (
+        curr.block.value.type === "numbered_list" &&
+        !Array.isArray(lastItem)
+      ) {
+        return [...prev, [curr]];
+      } else if (
+        curr.block.value.type === "bulleted_list" &&
+        Array.isArray(lastItem) &&
+        lastItem[0].block.value.type === "bulleted_list"
+      ) {
+        return [...initial(prev), [...lastItem, curr]];
+      } else if (
+        curr.block.value.type === "numbered_list" &&
+        Array.isArray(lastItem) &&
+        lastItem[0].block.value.type === "numbered_list"
+      ) {
+        return [...initial(prev), [...lastItem, curr]];
+      } else if (
+        curr.block.value.type === "numbered_list" &&
+        Array.isArray(lastItem) &&
+        lastItem[0].block.value.type === "bulleted_list"
+      ) {
+        return [...prev, [curr]];
+      } else if (
+        curr.block.value.type === "bulleted_list" &&
+        Array.isArray(lastItem) &&
+        lastItem[0].block.value.type === "numbered_list"
+      ) {
+        return [...prev, [curr]];
+      } else {
+        return [...prev, curr];
+      }
+    }, [])
+
+    .map(myFunc);
 
 const PostSections = (props: Props) => {
   const result = generateSection(
     props.pageChunks[props.id].value.content,
     props.pageChunks
   );
-  return <div>{result}</div>;
+  return <>{result}</>;
 };
 
 export default PostSections;

@@ -59,16 +59,25 @@ const renderSection = (section: ConvertBlockOutput) => {
           onClick={() => window.open(section.value)}
         />
       );
+    case "to_do":
+      return (
+        <div key={section.id}>
+          <label>
+            <input type="checkbox" value={section.value} />
+            {section.value}
+          </label>
+        </div>
+      );
     default:
       break;
   }
 };
 
-const myFunc = (value: any, index: number, arr: Array<any>) => {
+const recognizeArrays = (value: any, index: number) => {
   if (Array.isArray(value) && value[0].block.value.type === "bulleted_list") {
     return (
       <ul key={index} style={{ padding: "0 10px" }}>
-        {value.map(myFunc)}
+        {value.map(recognizeArrays)}
       </ul>
     );
   } else if (
@@ -77,16 +86,14 @@ const myFunc = (value: any, index: number, arr: Array<any>) => {
   ) {
     return (
       <ol key={index} style={{ padding: "0 10px" }}>
-        {value.map(myFunc)}
+        {value.map(recognizeArrays)}
       </ol>
     );
   }
   return (
     <React.Fragment key={index}>
       {renderSection(convertBlock(value.block))}
-      {value.children.length > 0 && (
-        <React.Fragment>{value.children}</React.Fragment>
-      )}
+      {value.children.length > 0 && value.children}
     </React.Fragment>
   );
 };
@@ -100,46 +107,38 @@ const generateSection = (content: string[], pageChunks: any) =>
     }))
     .reduce((prev, curr) => {
       const lastItem: any = last(prev);
-      if (
-        curr.block.value.type === "bulleted_list" &&
-        !Array.isArray(lastItem)
-      ) {
-        return [...prev, [curr]];
-      } else if (
-        curr.block.value.type === "numbered_list" &&
-        !Array.isArray(lastItem)
-      ) {
-        return [...prev, [curr]];
-      } else if (
-        curr.block.value.type === "bulleted_list" &&
-        Array.isArray(lastItem) &&
-        lastItem[0].block.value.type === "bulleted_list"
-      ) {
-        return [...initial(prev), [...lastItem, curr]];
-      } else if (
-        curr.block.value.type === "numbered_list" &&
-        Array.isArray(lastItem) &&
-        lastItem[0].block.value.type === "numbered_list"
-      ) {
-        return [...initial(prev), [...lastItem, curr]];
-      } else if (
-        curr.block.value.type === "numbered_list" &&
-        Array.isArray(lastItem) &&
-        lastItem[0].block.value.type === "bulleted_list"
-      ) {
-        return [...prev, [curr]];
-      } else if (
-        curr.block.value.type === "bulleted_list" &&
-        Array.isArray(lastItem) &&
-        lastItem[0].block.value.type === "numbered_list"
-      ) {
-        return [...prev, [curr]];
+      if (curr.block.value.type === "bulleted_list") {
+        if (
+          !Array.isArray(lastItem) ||
+          (Array.isArray(lastItem) &&
+            lastItem[0].block.value.type === "numbered_list")
+        ) {
+          return [...prev, [curr]];
+        } else if (
+          Array.isArray(lastItem) &&
+          lastItem[0].block.value.type === "bulleted_list"
+        ) {
+          return [...initial(prev), [...lastItem, curr]];
+        }
+      } else if (curr.block.value.type === "numbered_list") {
+        if (
+          !Array.isArray(lastItem) ||
+          (Array.isArray(lastItem) &&
+            lastItem[0].block.value.type === "bulleted_list")
+        ) {
+          return [...prev, [curr]];
+        } else if (
+          Array.isArray(lastItem) &&
+          lastItem[0].block.value.type === "numbered_list"
+        ) {
+          return [...initial(prev), [...lastItem, curr]];
+        }
       } else {
         return [...prev, curr];
       }
     }, [])
 
-    .map(myFunc);
+    .map(recognizeArrays);
 
 const PostSections = (props: Props) => {
   const result = generateSection(

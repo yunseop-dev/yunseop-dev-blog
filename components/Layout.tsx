@@ -16,7 +16,7 @@ const Layout: React.FunctionComponent<LayoutProps> = ({
   title = "Yunseop's Blog",
 }) => (
   <Wrapper>
-    <Reset />
+    {/* <Reset /> */}
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />

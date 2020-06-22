@@ -32,6 +32,10 @@ interface NumberedListOutput extends OutputCommon {
   type: "numbered_list";
   value: TextValue[];
 }
+interface TodoListOutput extends OutputCommon {
+  type: "to_do";
+  value: string;
+}
 
 type BlockOutput =
   | TextOutput
@@ -39,6 +43,7 @@ type BlockOutput =
   | HeaderOutput
   | BulletedListOutput
   | NumberedListOutput
+  | TodoListOutput
   | undefined;
 export type ConvertBlockOutput = BlockOutput;
 
@@ -54,6 +59,7 @@ export interface Block {
 }
 
 export const convertBlock = (block: Block): BlockOutput => {
+  console.log("block.value.type", block.value);
   switch (block.value.type) {
     case "text":
       return {
@@ -94,6 +100,14 @@ export const convertBlock = (block: Block): BlockOutput => {
         id: block.value.id,
         type: block.value.type,
         value: block.value.properties ? block.value.properties.title : [[""]],
+        createdTime: block.value.created_time,
+        lastEditedTime: block.value.last_edited_time,
+      };
+    case "to_do":
+      return {
+        id: block.value.id,
+        type: block.value.type,
+        value: block.value.properties.title[0][0],
         createdTime: block.value.created_time,
         lastEditedTime: block.value.last_edited_time,
       };

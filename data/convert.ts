@@ -36,6 +36,12 @@ interface TodoListOutput extends OutputCommon {
   type: "to_do";
   value: string;
 }
+interface BookmarkOutput extends OutputCommon {
+  type: "bookmark";
+  value: string;
+  link: string;
+  description: string;
+}
 
 type BlockOutput =
   | TextOutput
@@ -44,6 +50,7 @@ type BlockOutput =
   | BulletedListOutput
   | NumberedListOutput
   | TodoListOutput
+  | BookmarkOutput
   | undefined;
 export type ConvertBlockOutput = BlockOutput;
 
@@ -59,7 +66,7 @@ export interface Block {
 }
 
 export const convertBlock = (block: Block): BlockOutput => {
-  console.log("block.value.type", block.value);
+  // console.log("block.value.type", block.value);
   switch (block.value.type) {
     case "text":
       return {
@@ -108,6 +115,16 @@ export const convertBlock = (block: Block): BlockOutput => {
         id: block.value.id,
         type: block.value.type,
         value: block.value.properties.title[0][0],
+        createdTime: block.value.created_time,
+        lastEditedTime: block.value.last_edited_time,
+      };
+    case "bookmark":
+      return {
+        id: block.value.id,
+        type: block.value.type,
+        value: block.value.properties.title[0][0],
+        link: block.value.properties.link[0][0],
+        description: block.value.properties.description[0][0],
         createdTime: block.value.created_time,
         lastEditedTime: block.value.last_edited_time,
       };

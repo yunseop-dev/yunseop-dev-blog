@@ -70,12 +70,12 @@ const renderSection = (section: ConvertBlockOutput) => {
       );
     case "bookmark":
       return (
-        <div>
-          <a key={section.id} href={section.link}>
+        <a key={section.id} href={section.link}>
+          <h5>
+            <img src={section.icon} alt="icon" width="12" height="12" />
             {section.value}
-          </a>
-          <p>{section.description}</p>
-        </div>
+          </h5>
+        </a>
       );
     default:
       break;

@@ -41,6 +41,8 @@ interface BookmarkOutput extends OutputCommon {
   value: string;
   link: string;
   description: string;
+  icon: string;
+  cover: string;
 }
 
 type BlockOutput =
@@ -59,6 +61,7 @@ export interface Block {
     id: string;
     type: string;
     properties: any;
+    format: any;
     created_time: number;
     last_edited_time: number;
     content?: string[];
@@ -125,6 +128,8 @@ export const convertBlock = (block: Block): BlockOutput => {
         value: block.value.properties.title[0][0],
         link: block.value.properties.link[0][0],
         description: block.value.properties.description[0][0],
+        icon: block.value.format.bookmark_icon,
+        cover: block.value.format.bookmark_cover,
         createdTime: block.value.created_time,
         lastEditedTime: block.value.last_edited_time,
       };

@@ -15,6 +15,11 @@ interface Props {
   pageChunks: PostData["pageChunks"];
 }
 
+type Section = {
+  block: Block;
+  children: JSX.Element[];
+};
+
 export const renderTextSection = (value: TextValue[]) => {
   return value.map((s, i) => {
     if (s.length === 1) {
@@ -107,13 +112,14 @@ const recognizeArrays = (value: any, index: number) => {
 const generateSection = (content: string[] = [], pageChunks: any) =>
   content
     .map((id: string) => pageChunks[id])
-    .map((block: Block): any => ({
-      block,
-      children: generateSection(block.value.content, pageChunks),
-    }))
-    .reduce((prev, curr) => {
-      const lastItem: any = last(prev);
-      console.log("lastItem", lastItem);
+    .map(
+      (block: Block): Section => ({
+        block,
+        children: generateSection(block.value.content, pageChunks),
+      })
+    )
+    .reduce((prev: Section[], curr: Section) => {
+      const lastItem: Section | Section[] = last(prev);
       if (
         curr.block.value.type === "bulleted_list" &&
         isFirstItemOfArray("numbered_list", lastItem)
@@ -121,6 +127,7 @@ const generateSection = (content: string[] = [], pageChunks: any) =>
         return [...prev, [curr]];
       } else if (
         curr.block.value.type === "bulleted_list" &&
+        Array.isArray(lastItem) &&
         isNextListType("bulleted_list", lastItem)
       ) {
         return [...initial(prev), [...lastItem, curr]];
@@ -131,6 +138,7 @@ const generateSection = (content: string[] = [], pageChunks: any) =>
         return [...prev, [curr]];
       } else if (
         curr.block.value.type === "numbered_list" &&
+        Array.isArray(lastItem) &&
         isNextListType("numbered_list", lastItem)
       ) {
         return [...initial(prev), [...lastItem, curr]];
@@ -138,15 +146,16 @@ const generateSection = (content: string[] = [], pageChunks: any) =>
         return [...prev, curr];
       }
     }, [])
-
     .map(recognizeArrays);
 
-const isNextListType = (next: "bulleted_list" | "numbered_list", item: any) =>
-  Array.isArray(item) && item[0].block.value.type === next;
+const isNextListType = (
+  next: "bulleted_list" | "numbered_list",
+  item: Section[]
+) => item[0]?.block.value.type === next;
 
 const isFirstItemOfArray = (
   next: "bulleted_list" | "numbered_list",
-  item: any
+  item: Section | Section[]
 ) => !Array.isArray(item) || isNextListType(next, item);
 
 const PostSections = (props: Props) => {

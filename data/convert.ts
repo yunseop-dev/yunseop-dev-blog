@@ -69,7 +69,6 @@ export interface Block {
 }
 
 export const convertBlock = (block: Block): BlockOutput => {
-  // console.log("block.value.type", block.value);
   switch (block.value.type) {
     case "text":
       return {
@@ -178,7 +177,7 @@ export const convertCollection = (
       return {
         id: blockId,
         title: `${item.value?.format?.page_icon || ""} ${
-          item.value.properties.title[0][0]
+          item.value?.properties?.title[0][0] || "Untitled"
         }`,
         createdTime: item.value.created_time,
       };

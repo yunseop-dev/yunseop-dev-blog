@@ -11,7 +11,7 @@
     "@types/next": "^9.0.0",
     "@types/react": "^16.9.36",
     "cross-fetch": "^3.0.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "next": "^9.4.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

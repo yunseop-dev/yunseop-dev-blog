@@ -19,7 +19,7 @@ export const getData = async ({ pageId }: Input): Promise<Output> => {
   } = await loadPageChunk({ pageId });
   const page = pageChunks[pageId];
   const emoji = page.value.format?.page_icon;
-  const titleText = page.value.properties.title[0][0];
+  const titleText = page.value.properties?.title?.[0]?.[0] || "Untitled";
   const title = emoji ? `${emoji} ${titleText}` : titleText;
   const tags = page.value?.properties?.["!'(w"]?.[0]?.[0].split(",") || [];
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import Link from "next/link";
 import Head from "next/head";
 import styled from "styled-components";
-import { Reset } from "styled-reset";
+
 type LayoutProps = {
   title?: string;
 };
@@ -16,7 +16,6 @@ const Layout: React.FunctionComponent<LayoutProps> = ({
   title = "Yunseop's Blog",
 }) => (
   <Wrapper>
-    {/* <Reset /> */}
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />

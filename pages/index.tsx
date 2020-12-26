@@ -1,7 +1,7 @@
 import React from "react";
 import { NextPage } from "next";
 import Layout from "../components/Layout";
-import { HomeData, getData } from "../data/home";
+import { HomeData } from "../data/home";
 import Link from "next/link";
 import { getBaseUrl } from "../urlHelper";
 

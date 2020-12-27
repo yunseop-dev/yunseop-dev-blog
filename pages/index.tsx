@@ -14,7 +14,10 @@ const Index: NextPage<Props> = ({ posts }) => (
         {posts.map((post) => (
           <li key={post.id}>
             <Link href={"/posts/[pid]"} as={`/posts/${post.id}`}>
-              <a>{post.title}</a>
+              <a>
+                {post.title}
+                <img src={post.cover} alt={post.title} />
+              </a>
             </Link>
           </li>
         ))}

@@ -152,6 +152,7 @@ interface CollectionItem {
   title: string;
   id: string;
   createdTime: number;
+  cover: string;
 }
 
 interface CollectionOutput {
@@ -179,6 +180,7 @@ export const convertCollection = (
         title: `${item.value?.format?.page_icon || ""} ${
           item.value?.properties?.title[0][0] || "Untitled"
         }`,
+        cover: item.value?.format?.page_cover,
         createdTime: item.value.created_time,
       };
     }),

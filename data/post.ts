@@ -10,6 +10,7 @@ interface Output {
   title: string;
   createdTime: number;
   lastEditedTime: number;
+  cover: string;
   pageChunks: any;
 }
 
@@ -29,6 +30,7 @@ export const getData = async ({ pageId }: Input): Promise<Output> => {
     title,
     pageChunks,
     createdTime: page.value.created_time,
+    cover: page.value?.format?.page_cover,
     lastEditedTime: page.value.last_edited_time,
   };
 };

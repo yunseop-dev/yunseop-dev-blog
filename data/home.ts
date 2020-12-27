@@ -6,7 +6,7 @@ interface Output {
   tags: ConvertCollectionOutput["tags"];
 }
 
-const pageId = "7e716e58-4745-4621-8ef4-1b038ed71d78";
+const pageId = "0ac5c8b6-baef-40c9-896b-6612725f1049";
 
 export const getData = async (): Promise<Output> => {
   const {
@@ -19,13 +19,7 @@ export const getData = async (): Promise<Output> => {
     collectionId: page.value.collection_id,
     collectionViewId: page.value.view_ids[0],
     query: {
-      sort: [
-        {
-          direction: "descending",
-          property: "}%j{",
-          type: "created_time",
-        },
-      ],
+      sort: [],
     },
   });
 

@@ -182,6 +182,6 @@ export const convertCollection = (
         createdTime: item.value.created_time,
       };
     }),
-    tags: collection[Object.keys(collection)[0]].value.schema["!'(w"].options,
+    tags: collection[Object.keys(collection)[0]].value.schema["{cXZ"].options,
   };
 };

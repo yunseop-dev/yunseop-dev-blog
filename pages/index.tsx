@@ -1,41 +1,32 @@
 import React from "react";
 import { NextPage } from "next";
-import Layout from "../components/Layout";
-import { HomeData } from "../data/home";
-import Link from "next/link";
-import { getBaseUrl } from "../urlHelper";
+import { ExtendedRecordMap, NotionRenderer } from "react-notion-x";
+import { NotionAPI } from "notion-client";
+const notion = new NotionAPI();
 
-type Props = HomeData;
+type Props = {
+  recordMap: ExtendedRecordMap;
+};
 
-const Index: NextPage<Props> = ({ posts }) => (
-  <Layout>
-    <div>
-      <ul>
-        {posts.map((post) => (
-          <li key={post.id}>
-            <Link href={"/posts/[pid]"} as={`/posts/${post.id}`}>
-              <a>
-                {post.title}
-                <img src={post.cover} alt={post.title} />
-              </a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </Layout>
-);
-
-Index.getInitialProps = async ({ req }) => {
-  const url = getBaseUrl(req) + "/api/home";
-
-  const res = await fetch(url);
-
-  if (res.ok) {
-    return res.json();
-  } else {
-    throw new Error("Oops");
-  }
+const Index: NextPage<Props> = (props) => {
+  return (
+    <>
+      <div>Hello World</div>
+      <NotionRenderer
+        recordMap={props.recordMap}
+        previewImages={true}
+        fullPage={false}
+        darkMode={false}
+      />
+      <pre>{JSON.stringify(props.recordMap)}</pre>
+    </>
+  );
+};
+Index.getInitialProps = async () => {
+  const recordMap: ExtendedRecordMap = await notion.getPage(
+    "0ac5c8b6baef40c9896b6612725f1049"
+  );
+  return { recordMap };
 };
 
 export default Index;

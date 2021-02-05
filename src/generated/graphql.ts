@@ -11,109 +11,197 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The `Upload` scalar type represents a file upload. */
-  Upload: any;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: any;
+  /** A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/. */
+  EmailAddress: any;
+  /** Integers that will have a value of 0 or more. */
+  UnsignedInt: any;
 };
 
+
+
+
+
+
+
+
+
+
+export type AdditionalEntityFields = {
+  path?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+
+
+
+export enum SocialType {
+  Github = 'GITHUB',
+  Facebook = 'FACEBOOK',
+  Twitter = 'TWITTER',
+  Google = 'GOOGLE',
+  Email = 'EMAIL'
+}
+
+export type Account = {
+  __typename?: 'Account';
+  id: Scalars['ID'];
+  /** User's e-mail address. */
+  email?: Maybe<Scalars['EmailAddress']>;
+  socialType: SocialType;
+  user: User;
+  password?: Maybe<Scalars['String']>;
+};
+
+export type User = {
+  __typename?: 'User';
+  /** User ID. */
+  id: Scalars['ID'];
+  /** User's first name. */
+  firstName: Scalars['String'];
+  /** User's last name. */
+  lastName: Scalars['String'];
+  /** Posts published by user. */
+  posts?: Maybe<Array<Maybe<Post>>>;
+  /** Users that this user is following. */
+  following?: Maybe<Array<Maybe<User>>>;
+  /** Users that this user is followed by. */
+  followers?: Maybe<Array<Maybe<User>>>;
+  accounts?: Maybe<Array<Maybe<Account>>>;
+};
+
+export type Post = {
+  __typename?: 'Post';
+  /** Post ID. */
+  id: Scalars['ID'];
+  /** Post title. */
+  title: Scalars['String'];
+  /** Post content. */
+  content: Scalars['String'];
+  /** Post Author. */
+  author: User;
+  /** Post published timestamp. */
+  publishedAt?: Maybe<Scalars['DateTime']>;
+  /** Users who like this post. */
+  likedBy?: Maybe<Array<Maybe<User>>>;
+};
+
+export enum OrderField {
+  PublishedAt = 'publishedAt'
+}
+
+export enum OrderDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
+export type PostOrder = {
+  field?: Maybe<OrderField>;
+  direction?: Maybe<OrderDirection>;
+};
 
 export type Query = {
   __typename?: 'Query';
-  continents: Array<Continent>;
-  continent?: Maybe<Continent>;
-  countries: Array<Country>;
-  country?: Maybe<Country>;
-  languages: Array<Language>;
-  language?: Maybe<Language>;
+  /** Get post by ID. */
+  post?: Maybe<Post>;
+  posts?: Maybe<Array<Maybe<Post>>>;
+  user?: Maybe<User>;
+  account?: Maybe<Account>;
 };
 
 
-export type QueryContinentsArgs = {
-  filter?: Maybe<ContinentFilterInput>;
+export type QueryPostArgs = {
+  id: Scalars['ID'];
 };
 
 
-export type QueryContinentArgs = {
-  code: Scalars['ID'];
+export type QueryPostsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  last?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<PostOrder>;
+  publishedSince?: Maybe<Scalars['DateTime']>;
+  q?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryCountriesArgs = {
-  filter?: Maybe<CountryFilterInput>;
+export type QueryUserArgs = {
+  id: Scalars['ID'];
 };
 
 
-export type QueryCountryArgs = {
-  code: Scalars['ID'];
+export type QueryAccountArgs = {
+  id: Scalars['ID'];
+};
+
+/** Publish post input. */
+export type PublishPostInput = {
+  /** Post title. */
+  title: Scalars['String'];
+  /** Post content. */
+  content: Scalars['String'];
+};
+
+export type SignUpInput = {
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  email: Scalars['EmailAddress'];
+  password?: Maybe<Scalars['String']>;
+  socialType: SocialType;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  /** Publish post. */
+  publishPost: Post;
+  /**
+   * Follow user.
+   * Returns the updated number of followers.
+   */
+  followUser: Scalars['UnsignedInt'];
+  /**
+   * Unfollow user.
+   * Returns the updated number of followers.
+   */
+  unfollowUser: Scalars['UnsignedInt'];
+  /**
+   * Like post.
+   * Returns the updated number of likes received.
+   */
+  likePost: Scalars['UnsignedInt'];
+  signUp?: Maybe<User>;
+  signIn?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryLanguagesArgs = {
-  filter?: Maybe<LanguageFilterInput>;
+export type MutationPublishPostArgs = {
+  input: PublishPostInput;
 };
 
 
-export type QueryLanguageArgs = {
-  code: Scalars['ID'];
+export type MutationFollowUserArgs = {
+  userId: Scalars['ID'];
 };
 
-export type ContinentFilterInput = {
-  code?: Maybe<StringQueryOperatorInput>;
+
+export type MutationUnfollowUserArgs = {
+  userId: Scalars['ID'];
 };
 
-export type StringQueryOperatorInput = {
-  eq?: Maybe<Scalars['String']>;
-  ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
-  regex?: Maybe<Scalars['String']>;
-  glob?: Maybe<Scalars['String']>;
+
+export type MutationLikePostArgs = {
+  postId: Scalars['ID'];
 };
 
-export type Continent = {
-  __typename?: 'Continent';
-  code: Scalars['ID'];
-  name: Scalars['String'];
-  countries: Array<Country>;
+
+export type MutationSignUpArgs = {
+  input: SignUpInput;
 };
 
-export type Country = {
-  __typename?: 'Country';
-  code: Scalars['ID'];
-  name: Scalars['String'];
-  native: Scalars['String'];
-  phone: Scalars['String'];
-  continent: Continent;
-  capital?: Maybe<Scalars['String']>;
-  currency?: Maybe<Scalars['String']>;
-  languages: Array<Language>;
-  emoji: Scalars['String'];
-  emojiU: Scalars['String'];
-  states: Array<State>;
-};
 
-export type Language = {
-  __typename?: 'Language';
-  code: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  native?: Maybe<Scalars['String']>;
-  rtl: Scalars['Boolean'];
-};
-
-export type State = {
-  __typename?: 'State';
-  code?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  country: Country;
-};
-
-export type CountryFilterInput = {
-  code?: Maybe<StringQueryOperatorInput>;
-  currency?: Maybe<StringQueryOperatorInput>;
-  continent?: Maybe<StringQueryOperatorInput>;
-};
-
-export type LanguageFilterInput = {
-  code?: Maybe<StringQueryOperatorInput>;
+export type MutationSignInArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export enum CacheControlScope {
@@ -121,67 +209,74 @@ export enum CacheControlScope {
   Private = 'PRIVATE'
 }
 
-
-export type GetContinentsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetContinentsQuery = (
-  { __typename?: 'Query' }
-  & { continents: Array<(
-    { __typename?: 'Continent' }
-    & Pick<Continent, 'name' | 'code'>
-  )> }
-);
-
-export type GetCountriesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetCountriesQuery = (
-  { __typename?: 'Query' }
-  & { countries: Array<(
-    { __typename?: 'Country' }
-    & Pick<Country, 'name' | 'phone'>
-  )> }
-);
-
-export type GetCountriesByCodeQueryVariables = Exact<{
-  code: Scalars['String'];
+export type PostsQueryVariables = Exact<{
+  direction?: Maybe<OrderDirection>;
+  q?: Maybe<Scalars['String']>;
 }>;
 
 
-export type GetCountriesByCodeQuery = (
+export type PostsQuery = (
   { __typename?: 'Query' }
-  & { countries: Array<(
-    { __typename?: 'Country' }
-    & Pick<Country, 'name' | 'code'>
-  )> }
+  & {
+    posts?: Maybe<Array<Maybe<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'title' | 'content' | 'publishedAt'>
+      & {
+        author: (
+          { __typename?: 'User' }
+          & Pick<User, 'id' | 'firstName' | 'lastName'>
+        ), likedBy?: Maybe<Array<Maybe<(
+          { __typename?: 'User' }
+          & Pick<User, 'id'>
+        )>>>
+      }
+    )>>>
+  }
 );
 
 
-export const GetContinentsDocument = gql`
-    query getContinents {
-  continents {
-    name
-    code
+export const PostsDocument = gql`
+    query posts($direction: OrderDirection, $q: String) {
+  posts(orderBy: {field: publishedAt, direction: $direction}, q: $q) {
+    id
+    title
+    content
+    publishedAt
+    author {
+      id
+      firstName
+      lastName
+    }
+    likedBy {
+      id
+    }
   }
 }
     `;
-export type GetContinentsQueryResult = Apollo.QueryResult<GetContinentsQuery, GetContinentsQueryVariables>;
-export const GetCountriesDocument = gql`
-    query getCountries {
-  countries {
-    name
-    phone
-  }
+
+/**
+ * __usePostsQuery__
+ *
+ * To run a query within a React component, call `usePostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostsQuery({
+ *   variables: {
+ *      direction: // value for 'direction'
+ *      q: // value for 'q'
+ *   },
+ * });
+ */
+export function usePostsQuery (baseOptions?: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
+  return Apollo.useQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
 }
-    `;
-export type GetCountriesQueryResult = Apollo.QueryResult<GetCountriesQuery, GetCountriesQueryVariables>;
-export const GetCountriesByCodeDocument = gql`
-    query getCountriesByCode($code: String!) {
-  countries(filter: {continent: {eq: $code}}) {
-    name
-    code
-  }
+export function usePostsLazyQuery (baseOptions?: Apollo.LazyQueryHookOptions<PostsQuery, PostsQueryVariables>) {
+  return Apollo.useLazyQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
 }
-    `;
-export type GetCountriesByCodeQueryResult = Apollo.QueryResult<GetCountriesByCodeQuery, GetCountriesByCodeQueryVariables>;
+export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
+export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
+export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>;

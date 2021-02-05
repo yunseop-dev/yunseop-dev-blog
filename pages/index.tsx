@@ -1,20 +1,41 @@
-import { ssrGetCountries, PageGetCountriesComp } from "../src/generated/page";
-
+import { PagePostsComp, ssrPosts } from "../src/generated/page";
 import { withApollo } from "../src/withApollo";
 import { GetServerSideProps } from "next";
+import { useEffect, useState } from "react";
 
-const HomePage: PageGetCountriesComp = (props: any) => {
+const HomePage: PagePostsComp = () => {
+  const [query, setQuery] = useState<string>("");
+  // const { data: pageData, refetch } = ssrPosts.usePage(() => ({
+  //   variables: {}
+  // }));
+  const { data: pageData, refetch } = ssrPosts.usePage();
+
+  useEffect(() => {
+    if (query.length > 0) {
+      refetch({
+        q: query,
+      });
+    }
+  }, [query]);
+
   return (
-    <div>
-      {props.data?.countries?.map((country: any, k: any) => (
-        <div key={k}>{country.name}</div>
-      ))}
-    </div>
+    <>
+      <input
+        type="text"
+        onChange={(e) => setQuery(e.target.value)}
+        value={query}
+      />
+      <div>
+        {pageData?.posts?.map?.((item: any) => (
+          <div key={item?.id}>{item?.title}</div>
+        ))}
+      </div>
+    </>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  return await ssrGetCountries.getServerPage({}, ctx);
+export const getServerSideProps: GetServerSideProps = (ctx) => {
+  return ssrPosts.getServerPage({}, ctx);
 };
 
-export default withApollo(ssrGetCountries.withPage(() => ({}))(HomePage));
+export default withApollo(ssrPosts.withPage(() => ({}))(HomePage));

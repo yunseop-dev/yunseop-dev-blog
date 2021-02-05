@@ -1,6 +1,0 @@
-query getContinents {
-  continents {
-    name
-    code
-  }
-}

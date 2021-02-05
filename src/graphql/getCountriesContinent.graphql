@@ -1,6 +1,0 @@
-query getCountriesByCode($code: String!) {
-  countries(filter: { continent: { eq: $code } }) {
-    name
-    code
-  }
-}

@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://countries.trevorblades.com/"
+schema: "http://localhost:7071/api/graphql"
 documents: "src/**/*.graphql"
 generates:
   src/generated/graphql.ts:
@@ -9,7 +9,7 @@ generates:
       - "typescript-react-apollo"
     config:
           reactApolloVersion: 3
-          withHooks: false
+          withHooks: true
           withHOC: false
           withComponent: false
           exportFragmentSpreadSubTypes: true

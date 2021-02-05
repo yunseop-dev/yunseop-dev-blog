@@ -20,7 +20,7 @@ export const getApolloClient = (
   initialState?: NormalizedCacheObject
 ) => {
   const httpLink = createHttpLink({
-    uri: "https://countries.trevorblades.com",
+    uri: process.browser ? "/api/graphql" : "http://localhost:7071/api/graphql",
     fetch,
   });
   const cache = new InMemoryCache().restore(initialState || {});

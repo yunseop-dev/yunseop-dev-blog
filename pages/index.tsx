@@ -1,11 +1,20 @@
-import React from "react";
-import { NextPage } from "next";
-const Index: NextPage = (props) => {
+import { ssrGetCountries, PageGetCountriesComp } from "../src/generated/page";
+
+import { withApollo } from "../src/withApollo";
+import { GetServerSideProps } from "next";
+
+const HomePage: PageGetCountriesComp = (props: any) => {
   return (
-    <div className="max-w-screen-lg m-auto">
-      Hello
+    <div>
+      {props.data?.countries?.map((country: any, k: any) => (
+        <div key={k}>{country.name}</div>
+      ))}
     </div>
   );
 };
 
-export default Index;
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  return await ssrGetCountries.getServerPage({}, ctx);
+};
+
+export default withApollo(ssrGetCountries.withPage(() => ({}))(HomePage));

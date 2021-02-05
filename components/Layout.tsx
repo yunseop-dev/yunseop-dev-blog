@@ -2,7 +2,7 @@ import * as React from "react";
 import Link from "next/link";
 import Head from "next/head";
 import styled from "styled-components";
-import { Normalize } from 'styled-normalize'
+// import { Normalize } from 'styled-normalize'
 
 type LayoutProps = {
   title?: string;
@@ -17,7 +17,7 @@ const Layout: React.FunctionComponent<LayoutProps> = ({
   title = "Yunseop's Blog",
 }) => (
   <>
-    <Normalize />
+    {/* <Normalize /> */}
     <Wrapper>
       <Head>
         <title>{title}</title>

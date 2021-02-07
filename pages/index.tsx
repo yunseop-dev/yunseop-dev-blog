@@ -4,6 +4,9 @@ import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 
+const profileImage =
+  "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8OHx8bWFufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
+
 const Header = styled.header({
   display: "flex",
   justifyContent: "space-around",
@@ -81,6 +84,81 @@ const DropdownMenu = styled.button<{
       : ""}
 `;
 
+const Post = styled.div`
+  background: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  margin: 1.5rem;
+  padding: 1rem;
+`;
+
+const PostHeader = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ProfileCover = styled.img`
+  object-fit: cover;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.8rem;
+  margin: 0.5rem;
+`;
+
+const ProfileInformation = styled.div``;
+const PostTitle = styled.div`
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0.4rem;
+`;
+const PostSubtitle = styled.div`
+  margin: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #bdbdbd;
+`;
+
+const PostContent = styled.p`
+  font-size: 1rem;
+  line-height: 2.2rem;
+  letter-spacing: -0.035em;
+  color: #4f4f4f;
+`;
+
+const PostCounts = styled.div`
+  text-align: right;
+`;
+
+const PostCountItem = styled.div`
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.6rem;
+  letter-spacing: -0.035em;
+  color: #bdbdbd;
+`;
+
+const PostButtonGroup = styled.div`
+  display: flex;
+  padding: 0.2rem;
+  justify-content: space-around;
+  border-top: 1px solid #f2f2f2;
+  border-bottom: 1px solid #f2f2f2;
+`;
+const PostButton = styled.button`
+  width: 100%;
+  padding: 0.8rem;
+
+  // TODO: 이 아래것들은 묶을 생각 해보자
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  &:hover {
+    background: #f2f2f2;
+    border-radius: 8px;
+  }
+`;
+
 const HomePage: PagePostsComp = () => {
   const [query, setQuery] = useState<string>("");
   const { data: pageData, refetch } = ssrPosts.usePage();
@@ -115,20 +193,45 @@ const HomePage: PagePostsComp = () => {
             <a href="#">Bookmarks</a>
           </NavItem>
         </NavBar>
-        <DropdownMenu imageUrl="https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8OHx8bWFufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
-          Yunseop Kim
-        </DropdownMenu>
+        <DropdownMenu imageUrl={profileImage}>Yunseop Kim</DropdownMenu>
       </Header>
-      <input
-        type="text"
-        onChange={(e) => setQuery(e.target.value)}
-        value={query}
-      />
-      <div>
-        {pageData?.posts?.map?.((item: any) => (
-          <div key={item?.id}>{item?.title}</div>
-        ))}
-      </div>
+      <main style={{ background: "#FAFAFB", padding: "1rem" }}>
+        {/* <input
+          type="text"
+          onChange={(e) => setQuery(e.target.value)}
+          value={query}
+        /> */}
+        <section style={{ maxWidth: "1024px", margin: "0 auto" }}>
+          {pageData?.posts?.map?.((item) => (
+            // TODO: Post 컴포넌트 분리
+            <Post key={item?.id}>
+              <PostHeader>
+                <ProfileCover src={profileImage} alt="author" />
+                <ProfileInformation>
+                  <PostTitle>{`${item?.author.firstName} ${item?.author.lastName}`}</PostTitle>
+                  <PostSubtitle>{item?.publishedAt}</PostSubtitle>
+                </ProfileInformation>
+              </PostHeader>
+              <PostContent>{item?.content}</PostContent>
+              <PostCounts>
+                <PostCountItem>
+                  {item?.likedBy?.length ?? 0} Likes
+                </PostCountItem>
+              </PostCounts>
+              <PostButtonGroup>
+                <PostButton>Comment</PostButton>
+                <PostButton>Retweeted</PostButton>
+                <PostButton>Liked</PostButton>
+                <PostButton>Saved</PostButton>
+              </PostButtonGroup>
+              {/* <div>
+                <ProfileCover src={profileImage} alt="commenter" />
+                <input type="text" />
+              </div> */}
+            </Post>
+          ))}
+        </section>
+      </main>
     </>
   );
 };

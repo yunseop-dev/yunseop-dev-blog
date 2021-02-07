@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.7",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.1.5",
     "@types/next": "^9.0.0",
     "@types/react": "^17.0.1",
     "autoprefixer": "^10.2.4",
@@ -20,9 +22,7 @@
     "lodash": "^4.17.20",
     "next": "^10.0.6",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "styled-components": "^5.2.1",
-    "styled-normalize": "^8.0.7"
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.20.1",

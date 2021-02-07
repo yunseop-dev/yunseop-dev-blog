@@ -160,7 +160,7 @@ const PostButton = styled.button`
 `;
 
 const HomePage: PagePostsComp = () => {
-  const [query, setQuery] = useState<string>("");
+  const [query] = useState<string>("");
   const { data: pageData, refetch } = ssrPosts.usePage();
 
   useEffect(() => {

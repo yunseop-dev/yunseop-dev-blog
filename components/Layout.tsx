@@ -1,7 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Head from "next/head";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 type LayoutProps = {
   title?: string;

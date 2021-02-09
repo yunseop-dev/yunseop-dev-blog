@@ -1,8 +1,11 @@
 import { PagePostsComp, ssrPosts } from "../src/generated/page";
 import { withApollo } from "../src/withApollo";
-import { GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
+import ReactModal from "react-modal";
+import { useSignInMutation } from "../src/generated/graphql";
+import { ParsedUrlQuery } from "querystring";
 
 const profileImage =
   "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8OHx8bWFufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
@@ -61,6 +64,7 @@ const DropdownMenu = styled.button<{
 }>`
   display: flex;
   position: relative;
+  justify-content: center;
   align-items: center;
   font-size: 0.8em;
   font-weight: bold;
@@ -68,6 +72,10 @@ const DropdownMenu = styled.button<{
   border: none;
   outline: none;
   cursor: pointer;
+  width: 120px;
+  &:hover {
+    background: #f2f2f2;
+  }
   ${(props) =>
     props.imageUrl
       ? `
@@ -159,8 +167,16 @@ const PostButton = styled.button`
   }
 `;
 
+ReactModal.setAppElement("#__next");
+
 const HomePage: PagePostsComp = () => {
   const [query] = useState<string>("");
+  const [isLoggedIn] = useState<boolean>(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [signInMutation, { data, loading, error }] = useSignInMutation();
+
   const { data: pageData, refetch } = ssrPosts.usePage();
 
   useEffect(() => {
@@ -170,6 +186,30 @@ const HomePage: PagePostsComp = () => {
       });
     }
   }, [query]);
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  async function login(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    try {
+      await signInMutation({
+        variables: {
+          email,
+          password,
+        },
+        update(_, result) {
+          const token = result.data?.signIn;
+          document.cookie = `token=Bearer ${token};`;
+        },
+      });
+    } catch (error) {}
+  }
 
   return (
     <>
@@ -193,7 +233,12 @@ const HomePage: PagePostsComp = () => {
             <a href="#">Bookmarks</a>
           </NavItem>
         </NavBar>
-        <DropdownMenu imageUrl={profileImage}>Yunseop Kim</DropdownMenu>
+        <DropdownMenu
+          imageUrl={isLoggedIn ? profileImage : ""}
+          onClick={openModal}
+        >
+          Login
+        </DropdownMenu>
       </Header>
       <main style={{ background: "#FAFAFB", padding: "1rem" }}>
         {/* <input
@@ -232,11 +277,52 @@ const HomePage: PagePostsComp = () => {
           ))}
         </section>
       </main>
+      <ReactModal
+        isOpen={modalIsOpen}
+        contentLabel="Example Modal"
+        style={{
+          content: {
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+          },
+        }}
+      >
+        <h2>Login</h2>
+        <button onClick={closeModal}>close</button>
+        <form onSubmit={login}>
+          <label>
+            Email:
+            <input
+              type="email"
+              placeholder="Enter your ID"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              type="password"
+              placeholder="Enter your password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+            />
+          </label>
+          <button>Login</button>
+          <div>{error?.message}</div>
+        </form>
+      </ReactModal>
     </>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = (ctx) => {
+export const getServerSideProps: GetServerSideProps = (
+  ctx: GetServerSidePropsContext<ParsedUrlQuery>
+) => {
   return ssrPosts.getServerPage({}, ctx);
 };
 

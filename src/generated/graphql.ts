@@ -217,21 +217,28 @@ export type PostsQueryVariables = Exact<{
 
 export type PostsQuery = (
   { __typename?: 'Query' }
-  & {
-    posts?: Maybe<Array<Maybe<(
-      { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'title' | 'content' | 'publishedAt'>
-      & {
-        author: (
-          { __typename?: 'User' }
-          & Pick<User, 'id' | 'firstName' | 'lastName'>
-        ), likedBy?: Maybe<Array<Maybe<(
-          { __typename?: 'User' }
-          & Pick<User, 'id'>
-        )>>>
-      }
-    )>>>
-  }
+  & { posts?: Maybe<Array<Maybe<(
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'title' | 'content' | 'publishedAt'>
+    & { author: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'firstName' | 'lastName'>
+    ), likedBy?: Maybe<Array<Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id'>
+    )>>> }
+  )>>> }
+);
+
+export type SignInMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type SignInMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'signIn'>
 );
 
 
@@ -271,12 +278,43 @@ export const PostsDocument = gql`
  *   },
  * });
  */
-export function usePostsQuery (baseOptions?: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
-  return Apollo.useQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
-}
-export function usePostsLazyQuery (baseOptions?: Apollo.LazyQueryHookOptions<PostsQuery, PostsQueryVariables>) {
-  return Apollo.useLazyQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
-}
+export function usePostsQuery(baseOptions?: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
+        return Apollo.useQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
+      }
+export function usePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PostsQuery, PostsQueryVariables>) {
+          return Apollo.useLazyQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
+        }
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>;
+export const SignInDocument = gql`
+    mutation signIn($email: String!, $password: String!) {
+  signIn(email: $email, password: $password)
+}
+    `;
+export type SignInMutationFn = Apollo.MutationFunction<SignInMutation, SignInMutationVariables>;
+
+/**
+ * __useSignInMutation__
+ *
+ * To run a mutation, you first call `useSignInMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSignInMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [signInMutation, { data, loading, error }] = useSignInMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useSignInMutation(baseOptions?: Apollo.MutationHookOptions<SignInMutation, SignInMutationVariables>) {
+        return Apollo.useMutation<SignInMutation, SignInMutationVariables>(SignInDocument, baseOptions);
+      }
+export type SignInMutationHookResult = ReturnType<typeof useSignInMutation>;
+export type SignInMutationResult = Apollo.MutationResult<SignInMutation>;
+export type SignInMutationOptions = Apollo.BaseMutationOptions<SignInMutation, SignInMutationVariables>;

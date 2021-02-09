@@ -1,15 +1,17 @@
 import * as Types from "./graphql";
 
 import * as Operations from "./graphql";
-import { NextPage } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import { NextRouter, useRouter } from "next/router";
 import { QueryHookOptions, useQuery } from "@apollo/client";
 import * as Apollo from "@apollo/client";
 import type React from "react";
 import { getApolloClient } from "../withApollo";
+
+import { ParsedUrlQuery } from "querystring";
 export async function getServerPagePosts(
   options: Omit<Apollo.QueryOptions<Types.PostsQueryVariables>, "query">,
-  ctx?: any
+  ctx?: GetServerSidePropsContext<ParsedUrlQuery>
 ) {
   const apolloClient = getApolloClient(ctx);
 

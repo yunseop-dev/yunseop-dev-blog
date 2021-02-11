@@ -3,11 +3,7 @@ import { withApollo } from "../src/withApollo";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import React, { useEffect, useState } from "react";
 import ReactModal from "react-modal";
-import {
-  Account,
-  useMyLazyQuery,
-  useSignInMutation,
-} from "../src/generated/graphql";
+import { Account, useMyLazyQuery } from "../src/generated/graphql";
 import { ParsedUrlQuery } from "querystring";
 import { isLoggedInVar, myInfoVar } from "../src/graphql/cache";
 import { useReactiveVar } from "@apollo/client";
@@ -16,6 +12,8 @@ import DropdownMenu from "../components/DropdownMenu";
 import Header from "../components/Header";
 import Logo from "../components/Logo";
 import { NavBar, NavItem } from "../components/Nav";
+import LoginDialog from "../components/LoginDialog";
+import useModal from "../hooks/useModal";
 
 const profileImage =
   "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8OHx8bWFufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
@@ -24,17 +22,13 @@ ReactModal.setAppElement("#__next");
 
 const HomePage: PagePostsComp = () => {
   const [query] = useState<string>("");
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [signInMutation, { data, loading, error }] = useSignInMutation();
+  const { isShowing, toggle } = useModal();
   const [
     useMyQuery,
     { data: my, loading: myLoading, error: myError },
   ] = useMyLazyQuery();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const account: Account | null = useReactiveVar(myInfoVar);
-
   const { data: pageData, refetch } = ssrPosts.usePage();
 
   useEffect(() => {
@@ -54,32 +48,6 @@ const HomePage: PagePostsComp = () => {
       });
     }
   }, [query]);
-
-  function openModal() {
-    setIsOpen(true);
-  }
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  async function login(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    try {
-      await signInMutation({
-        variables: {
-          email,
-          password,
-        },
-        update(_, result) {
-          const token = result.data?.signIn;
-          document.cookie = `token=Bearer ${token};`;
-          isLoggedInVar(true);
-          closeModal();
-        },
-      });
-    } catch (error) {}
-  }
 
   return (
     <>
@@ -105,7 +73,7 @@ const HomePage: PagePostsComp = () => {
         </NavBar>
         <DropdownMenu
           imageUrl={isLoggedIn ? profileImage : ""}
-          onClick={openModal}
+          onClick={toggle}
         >
           {isLoggedIn ? my?.my?.user.firstName : "Login"}
         </DropdownMenu>
@@ -131,45 +99,7 @@ const HomePage: PagePostsComp = () => {
           ))}
         </section>
       </main>
-      <ReactModal
-        isOpen={modalIsOpen}
-        contentLabel="Example Modal"
-        style={{
-          content: {
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-          },
-        }}
-      >
-        <h2>Login</h2>
-        <button onClick={closeModal}>close</button>
-        <form onSubmit={login}>
-          <label>
-            Email:
-            <input
-              type="email"
-              placeholder="Enter your ID"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-            />
-          </label>
-          <label>
-            Password:
-            <input
-              type="password"
-              placeholder="Enter your password"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-            />
-          </label>
-          <button>Login</button>
-          <div>{error?.message}</div>
-        </form>
-      </ReactModal>
+      <LoginDialog isShowing={isShowing} hide={toggle} />
     </>
   );
 };

@@ -4,8 +4,14 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import ReactModal from "react-modal";
-import { useSignInMutation } from "../src/generated/graphql";
+import {
+  Account,
+  useMyLazyQuery,
+  useSignInMutation,
+} from "../src/generated/graphql";
 import { ParsedUrlQuery } from "querystring";
+import { isLoggedInVar, myInfoVar } from "../src/graphql/cache";
+import { useReactiveVar } from "@apollo/client";
 
 const profileImage =
   "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8OHx8bWFufGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
@@ -171,13 +177,28 @@ ReactModal.setAppElement("#__next");
 
 const HomePage: PagePostsComp = () => {
   const [query] = useState<string>("");
-  const [isLoggedIn] = useState<boolean>(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [signInMutation, { data, loading, error }] = useSignInMutation();
+  const [
+    useMyQuery,
+    { data: my, loading: myLoading, error: myError },
+  ] = useMyLazyQuery();
+  const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
+  const account: Account | null = useReactiveVar(myInfoVar);
 
   const { data: pageData, refetch } = ssrPosts.usePage();
+
+  useEffect(() => {
+    if (!account) {
+      useMyQuery();
+    }
+  }, [account]);
+
+  useEffect(() => {
+    myInfoVar(my?.my);
+  }, [my]);
 
   useEffect(() => {
     if (query.length > 0) {
@@ -206,6 +227,8 @@ const HomePage: PagePostsComp = () => {
         update(_, result) {
           const token = result.data?.signIn;
           document.cookie = `token=Bearer ${token};`;
+          isLoggedInVar(true);
+          closeModal();
         },
       });
     } catch (error) {}
@@ -237,7 +260,7 @@ const HomePage: PagePostsComp = () => {
           imageUrl={isLoggedIn ? profileImage : ""}
           onClick={openModal}
         >
-          Login
+          {isLoggedIn ? my?.my?.user.firstName : "Login"}
         </DropdownMenu>
       </Header>
       <main style={{ background: "#FAFAFB", padding: "1rem" }}>

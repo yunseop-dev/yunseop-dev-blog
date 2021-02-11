@@ -8,20 +8,24 @@ import {
 } from "@apollo/client";
 import getCookie from "../utils/getCookie";
 import { ParsedUrlQuery } from "querystring";
+import { isLoggedInVar } from "./graphql/cache";
 
 export const withApollo = (Comp: NextPage) => (props: any) => {
   return (
-    <ApolloProvider client={getApolloClient(null, props.apolloState)}>
+    <ApolloProvider client={getApolloClient(undefined, props.apolloState)}>
       <Comp />
     </ApolloProvider>
   );
 };
 
 export const getApolloClient = (
-  ctx: GetServerSidePropsContext<ParsedUrlQuery>,
+  ctx?: GetServerSidePropsContext<ParsedUrlQuery>,
   initialState?: NormalizedCacheObject
 ) => {
   const token = getCookie("token", ctx?.req?.cookies);
+  if (token) {
+    isLoggedInVar(true);
+  }
   const httpLink = createHttpLink({
     uri: process.browser
       ? process.env.NEXT_PUBLIC_GRAPHQL_URL

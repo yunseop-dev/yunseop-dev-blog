@@ -1,6 +1,6 @@
 import { NextApiRequestCookies } from "next/dist/next-server/server/api-utils";
 
-const getCookie = (key: string, cookiesFromSSR: NextApiRequestCookies) => {
+const getCookie = (key: string, cookiesFromSSR?: NextApiRequestCookies) => {
     if (typeof window === 'undefined') {
         return cookiesFromSSR?.[key] ?? "";
     }

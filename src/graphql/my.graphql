@@ -1,0 +1,12 @@
+query my {
+  my {
+    id
+    email
+    socialType
+    user {
+      id
+      firstName
+      lastName
+    }
+  }
+}

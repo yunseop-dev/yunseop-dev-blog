@@ -1,16 +1,18 @@
 import { useState } from "react";
 import ReactModal from "react-modal";
-import { useSignInMutation } from "../src/generated/graphql";
-import { isLoggedInVar } from "../src/graphql/cache";
+import { useSignInMutation } from "../generated/graphql";
+import { isLoggedInVar } from "../graphql/cache";
 
 interface LoginDialogProps {
   isShowing: boolean;
   hide: Function;
 }
 
+ReactModal.setAppElement("#__next");
+
 const LoginDialog = ({ isShowing, hide }: LoginDialogProps) => {
   //   const [modalIsOpen, setIsOpen] = useState(false);
-  const [signInMutation, { data, loading, error }] = useSignInMutation();
+  const [signInMutation, { error }] = useSignInMutation();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");

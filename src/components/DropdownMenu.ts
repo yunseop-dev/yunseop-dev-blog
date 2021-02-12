@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-const DropdownMenu = styled.button<{
+export const DropdownMenu = styled.button<{
     imageUrl?: string;
 }>`
   display: flex;
@@ -31,6 +31,33 @@ const DropdownMenu = styled.button<{
   }
   `
             : ""}
+`;
+
+export const DropdownItems = styled.ul`
+  position: absolute;
+  top: 4rem;
+  left: 0;
+  text-align: left;
+  width: 10rem;
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0.8rem;
+  background: white;
+`;
+
+export const DropdownItem = styled.li`
+  padding: 0.5rem;
+  &:hover {
+    background: #f2f2f2;
+    border-radius: 0.5rem;
+  }
+`;
+
+export const DropdownSeperator = styled.li`
+  display: block;
+  height: 1px;
+  background: #f2f2f2;
+  margin: 0.2rem;
 `;
 
 export default DropdownMenu;

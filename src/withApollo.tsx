@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   createHttpLink,
 } from "@apollo/client";
-import getCookie from "../utils/getCookie";
+import getCookie from "./utils/getCookie";
 import { ParsedUrlQuery } from "querystring";
 import { isLoggedInVar } from "./graphql/cache";
 

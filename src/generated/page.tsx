@@ -7,7 +7,6 @@ import { QueryHookOptions, useQuery } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 import type React from 'react';
 import { getApolloClient} from '../withApollo';
-import type { NormalizedCacheObject } from '@apollo/client';
 export async function getServerPageMy
     (options: Omit<Apollo.QueryOptions<Types.MyQueryVariables>, 'query'>, ctx? :any ){
         const apolloClient = getApolloClient(ctx);

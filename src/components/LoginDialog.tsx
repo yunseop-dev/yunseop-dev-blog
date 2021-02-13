@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactModal from "react-modal";
 import { useSignInMutation } from "../generated/graphql";
 import { isLoggedInVar } from "../graphql/cache";
+import { setCookie } from "../utils/cookie";
 
 interface LoginDialogProps {
   isShowing: boolean;
@@ -11,7 +12,6 @@ interface LoginDialogProps {
 ReactModal.setAppElement("#__next");
 
 const LoginDialog = ({ isShowing, hide }: LoginDialogProps) => {
-  //   const [modalIsOpen, setIsOpen] = useState(false);
   const [signInMutation, { error }] = useSignInMutation();
 
   const [email, setEmail] = useState<string>("");
@@ -27,7 +27,7 @@ const LoginDialog = ({ isShowing, hide }: LoginDialogProps) => {
         },
         update(_, result) {
           const token = result.data?.signIn;
-          document.cookie = `token=Bearer ${token};`;
+          setCookie("token", `Bearer ${token}`);
           isLoggedInVar(true);
           hide();
         },

@@ -1,6 +1,14 @@
 import { NextApiRequestCookies } from "next/dist/next-server/server/api-utils";
 
-const getCookie = (key: string, cookiesFromSSR?: NextApiRequestCookies) => {
+export const setCookie = (name: string, value: string) => {
+    document.cookie = `${name}=${value}`;
+}
+
+export const removeCookie = (name: string): void => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+}
+
+export const getCookie = (key: string, cookiesFromSSR?: NextApiRequestCookies) => {
     if (typeof window === 'undefined') {
         return cookiesFromSSR?.[key] ?? "";
     }
@@ -16,5 +24,3 @@ const getCookie = (key: string, cookiesFromSSR?: NextApiRequestCookies) => {
         ));
     return cookies?.[key] ?? "";
 }
-
-export default getCookie

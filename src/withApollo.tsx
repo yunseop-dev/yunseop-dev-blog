@@ -6,7 +6,7 @@ import {
   ApolloProvider,
   createHttpLink,
 } from "@apollo/client";
-import getCookie from "./utils/getCookie";
+import { getCookie } from "./utils/cookie";
 import { ParsedUrlQuery } from "querystring";
 import { isLoggedInVar } from "./graphql/cache";
 
@@ -23,6 +23,7 @@ export const getApolloClient = (
   initialState?: NormalizedCacheObject
 ) => {
   const token = getCookie("token", ctx?.req?.cookies);
+  console.log("🐛", token);
   if (token) {
     isLoggedInVar(true);
   }

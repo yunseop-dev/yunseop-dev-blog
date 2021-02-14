@@ -9,6 +9,13 @@ import Logo from "../src/components/Logo";
 import { NavBar, NavItem } from "../src/components/Nav";
 import DropdownMenuContainer from "../src/containers/DropdownMenuContainer";
 import { profileImage } from "../src/constants";
+import styled from "@emotion/styled";
+import TweetFormComponent from "../src/components/Tweetform";
+
+const Section = styled.section`
+  max-width: 1024px;
+  margin: 0 auto;
+`;
 
 const HomePage: PagePostsComp = () => {
   const [query] = useState<string>("");
@@ -47,7 +54,10 @@ const HomePage: PagePostsComp = () => {
         <DropdownMenuContainer></DropdownMenuContainer>
       </Header>
       <main style={{ background: "#FAFAFB", padding: "1rem" }}>
-        <section style={{ maxWidth: "1024px", margin: "0 auto" }}>
+        <Section>
+          <TweetFormComponent profileImage={profileImage} />
+        </Section>
+        <Section>
           {pageData?.posts?.map?.((item) => (
             <Post
               key={item?.id}
@@ -60,7 +70,7 @@ const HomePage: PagePostsComp = () => {
               }}
             />
           ))}
-        </section>
+        </Section>
       </main>
     </>
   );

@@ -30,10 +30,7 @@ const DropdownMenuContainer = () => {
   }));
 
   useEffect(() => {
-    console.log("data", data);
-    console.log("isLoggedIn", isLoggedIn);
     if (!data?.my && isLoggedIn) {
-      console.log("🐛");
       refetch();
     }
   }, [data, isLoggedIn]);

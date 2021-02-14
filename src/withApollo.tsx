@@ -1,4 +1,4 @@
-import { GetServerSidePropsContext, NextPage } from "next";
+import { NextPage } from "next";
 import {
   ApolloClient,
   NormalizedCacheObject,
@@ -7,7 +7,6 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { getCookie } from "./utils/cookie";
-import { ParsedUrlQuery } from "querystring";
 import { isLoggedInVar } from "./graphql/cache";
 import { setContext } from "@apollo/client/link/context";
 
@@ -34,7 +33,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 export const getApolloClient = (
-  ctx?: GetServerSidePropsContext<ParsedUrlQuery>,
+  _: any,
   initialState?: NormalizedCacheObject
 ) => {
   const httpLink = createHttpLink({

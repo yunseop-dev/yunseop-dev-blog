@@ -29,6 +29,8 @@ const LoginDialog = ({ isShowing, hide }: LoginDialogProps) => {
           const token = result.data?.signIn;
           setCookie("token", `Bearer ${token}`);
           isLoggedInVar(true);
+          setEmail(() => "");
+          setPassword(() => "");
           hide();
         },
       });

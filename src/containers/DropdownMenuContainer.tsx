@@ -1,5 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import DropdownMenu, {
   DropdownItems,
   DropdownItem,
@@ -9,26 +9,42 @@ import LoginDialog from "../components/LoginDialog";
 import { profileImage } from "../constants";
 import { isLoggedInVar, myInfoVar } from "../graphql/cache";
 import useModal from "../hooks/useModal";
-import { Account, useMyLazyQuery } from "../generated/graphql";
+import { getCookie, removeCookie } from "../utils/cookie";
+import { ssrMy } from "../generated/page";
+import { withApollo } from "../withApollo";
 
 const DropdownMenuContainer = () => {
   const { isShowing, toggle: toggleModal } = useModal();
-  const [useMyQuery, { data: my }] = useMyLazyQuery();
+  const { isShowing: isShowingMenu, toggle: toggleMenu } = useModal();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
-  const [showMenu, setShowMenu] = useState<boolean>(false);
-  const account: Account | null = useReactiveVar(myInfoVar);
+  const { data, client, refetch } = ssrMy.usePage(() => ({
+    context: {
+      headers: {
+        authorization: getCookie("token"),
+      },
+    },
+    errorPolicy: "ignore",
+    onError(error) {
+      console.log(error.message);
+    },
+  }));
+
   useEffect(() => {
-    if (!account && isLoggedIn) {
-      useMyQuery();
+    console.log("data", data);
+    console.log("isLoggedIn", isLoggedIn);
+    if (!data?.my && isLoggedIn) {
+      console.log("🐛");
+      refetch();
     }
-  }, [account, isLoggedIn]);
+  }, [data, isLoggedIn]);
 
-  useEffect(() => {
-    myInfoVar(my?.my);
-  }, [my]);
-
-  function toggleMenu() {
-    setShowMenu(!showMenu);
+  function logout() {
+    if (window.confirm("로그아웃 하시겠습니까?")) {
+      isLoggedInVar(false);
+      myInfoVar(null);
+      removeCookie("token");
+      client?.resetStore();
+    }
   }
 
   return (
@@ -37,14 +53,14 @@ const DropdownMenuContainer = () => {
         imageUrl={isLoggedIn ? profileImage : ""}
         onClick={isLoggedIn ? toggleMenu : toggleModal}
       >
-        {isLoggedIn ? my?.my?.user.firstName : "Login"}
-        {showMenu && (
+        {isLoggedIn ? data?.my?.user.firstName ?? "error" : "Login"}
+        {isShowingMenu && (
           <DropdownItems>
             <DropdownItem>My Profile</DropdownItem>
             <DropdownItem>Group Chat</DropdownItem>
             <DropdownItem>Settings</DropdownItem>
             <DropdownSeperator></DropdownSeperator>
-            <DropdownItem>Logout</DropdownItem>
+            <DropdownItem onClick={logout}>Logout</DropdownItem>
           </DropdownItems>
         )}
       </DropdownMenu>
@@ -52,4 +68,9 @@ const DropdownMenuContainer = () => {
     </>
   );
 };
-export default DropdownMenuContainer;
+
+export const getServerSideProps = async () => {
+  return await ssrMy.getServerPage({});
+};
+
+export default withApollo(DropdownMenuContainer);

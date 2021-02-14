@@ -9,6 +9,7 @@ import {
 import { getCookie } from "./utils/cookie";
 import { ParsedUrlQuery } from "querystring";
 import { isLoggedInVar } from "./graphql/cache";
+import { setContext } from "@apollo/client/link/context";
 
 export const withApollo = (Comp: NextPage) => (props: any) => {
   return (
@@ -18,27 +19,34 @@ export const withApollo = (Comp: NextPage) => (props: any) => {
   );
 };
 
+const authLink = setContext((_, { headers }) => {
+  const token = getCookie("token");
+  if (token) {
+    isLoggedInVar(true);
+  }
+
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? token : "",
+    },
+  };
+});
+
 export const getApolloClient = (
   ctx?: GetServerSidePropsContext<ParsedUrlQuery>,
   initialState?: NormalizedCacheObject
 ) => {
-  const token = getCookie("token", ctx?.req?.cookies);
-  console.log("🐛", token);
-  if (token) {
-    isLoggedInVar(true);
-  }
   const httpLink = createHttpLink({
     uri: process.browser
       ? process.env.NEXT_PUBLIC_GRAPHQL_URL
       : `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_GRAPHQL_URL}`,
     fetch,
-    headers: {
-      authorization: token,
-    },
   });
   const cache = new InMemoryCache().restore(initialState || {});
   return new ApolloClient({
-    link: httpLink,
+    ssrMode: true,
+    link: authLink.concat(httpLink),
     cache,
   });
 };

@@ -9,7 +9,7 @@ import LoginDialog from "../components/LoginDialog";
 import { profileImage } from "../constants";
 import { isLoggedInVar, myInfoVar } from "../graphql/cache";
 import useModal from "../hooks/useModal";
-import { getCookie, removeCookie } from "../utils/cookie";
+import { removeCookie } from "../utils/cookie";
 import { ssrMy } from "../generated/page";
 import { withApollo } from "../withApollo";
 
@@ -18,11 +18,6 @@ const DropdownMenuContainer = () => {
   const { isShowing: isShowingMenu, toggle: toggleMenu } = useModal();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const { data, client, refetch } = ssrMy.usePage(() => ({
-    context: {
-      headers: {
-        authorization: getCookie("token"),
-      },
-    },
     errorPolicy: "ignore",
     onError(error) {
       console.log(error.message);

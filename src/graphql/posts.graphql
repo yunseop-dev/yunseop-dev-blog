@@ -1,16 +1,5 @@
 query posts($direction: OrderDirection, $q: String) {
   posts(orderBy: { field: publishedAt, direction: $direction }, q: $q) {
-    id
-    title
-    content
-    publishedAt
-    author {
-      id
-      firstName
-      lastName
-    }
-    likedBy {
-      id
-    }
+    ...PostField
   }
 }

@@ -1,0 +1,5 @@
+mutation publishPost($input: PublishPostInput!) {
+  publishPost(input: $input) {
+    ...PostField
+  }
+}

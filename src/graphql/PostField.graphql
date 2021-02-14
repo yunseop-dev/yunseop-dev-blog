@@ -1,0 +1,14 @@
+fragment PostField on Post {
+  id
+  title
+  content
+  publishedAt
+  author {
+    id
+    firstName
+    lastName
+  }
+  likedBy {
+    id
+  }
+}

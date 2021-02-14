@@ -210,6 +210,18 @@ export enum CacheControlScope {
   Private = 'PRIVATE'
 }
 
+export type PostFieldFragment = (
+  { __typename?: 'Post' }
+  & Pick<Post, 'id' | 'title' | 'content' | 'publishedAt'>
+  & { author: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'firstName' | 'lastName'>
+  ), likedBy?: Maybe<Array<Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id'>
+  )>>> }
+);
+
 export type MyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -235,15 +247,21 @@ export type PostsQuery = (
   { __typename?: 'Query' }
   & { posts?: Maybe<Array<Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content' | 'publishedAt'>
-    & { author: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'firstName' | 'lastName'>
-    ), likedBy?: Maybe<Array<Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id'>
-    )>>> }
+    & PostFieldFragment
   )>>> }
+);
+
+export type PublishPostMutationVariables = Exact<{
+  input: PublishPostInput;
+}>;
+
+
+export type PublishPostMutation = (
+  { __typename?: 'Mutation' }
+  & { publishPost: (
+    { __typename?: 'Post' }
+    & PostFieldFragment
+  ) }
 );
 
 export type SignInMutationVariables = Exact<{
@@ -257,7 +275,22 @@ export type SignInMutation = (
   & Pick<Mutation, 'signIn'>
 );
 
-
+export const PostFieldFragmentDoc = gql`
+    fragment PostField on Post {
+  id
+  title
+  content
+  publishedAt
+  author {
+    id
+    firstName
+    lastName
+  }
+  likedBy {
+    id
+  }
+}
+    `;
 export const MyDocument = gql`
     query my {
   my {
@@ -300,21 +333,10 @@ export type MyQueryResult = Apollo.QueryResult<MyQuery, MyQueryVariables>;
 export const PostsDocument = gql`
     query posts($direction: OrderDirection, $q: String) {
   posts(orderBy: {field: publishedAt, direction: $direction}, q: $q) {
-    id
-    title
-    content
-    publishedAt
-    author {
-      id
-      firstName
-      lastName
-    }
-    likedBy {
-      id
-    }
+    ...PostField
   }
 }
-    `;
+    ${PostFieldFragmentDoc}`;
 
 /**
  * __usePostsQuery__
@@ -342,6 +364,38 @@ export function usePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Post
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>;
+export const PublishPostDocument = gql`
+    mutation publishPost($input: PublishPostInput!) {
+  publishPost(input: $input) {
+    ...PostField
+  }
+}
+    ${PostFieldFragmentDoc}`;
+export type PublishPostMutationFn = Apollo.MutationFunction<PublishPostMutation, PublishPostMutationVariables>;
+
+/**
+ * __usePublishPostMutation__
+ *
+ * To run a mutation, you first call `usePublishPostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePublishPostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [publishPostMutation, { data, loading, error }] = usePublishPostMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function usePublishPostMutation(baseOptions?: Apollo.MutationHookOptions<PublishPostMutation, PublishPostMutationVariables>) {
+        return Apollo.useMutation<PublishPostMutation, PublishPostMutationVariables>(PublishPostDocument, baseOptions);
+      }
+export type PublishPostMutationHookResult = ReturnType<typeof usePublishPostMutation>;
+export type PublishPostMutationResult = Apollo.MutationResult<PublishPostMutation>;
+export type PublishPostMutationOptions = Apollo.BaseMutationOptions<PublishPostMutation, PublishPostMutationVariables>;
 export const SignInDocument = gql`
     mutation signIn($email: String!, $password: String!) {
   signIn(email: $email, password: $password)

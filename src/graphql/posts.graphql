@@ -1,5 +1,17 @@
-query posts($direction: OrderDirection, $q: String) {
-  posts(orderBy: { field: publishedAt, direction: $direction }, q: $q) {
+query posts(
+  $offset: Int
+  $limit: Int
+  $orderBy: PostOrder
+  $publishedSince: DateTime
+  $q: String
+) {
+  posts(
+    offset: $offset
+    limit: $limit
+    orderBy: $orderBy
+    publishedSince: $publishedSince
+    q: $q
+  ) {
     ...PostField
   }
 }

@@ -1,7 +1,7 @@
 import { PagePostsComp, ssrPosts } from "../src/generated/page";
 import { withApollo } from "../src/withApollo";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ParsedUrlQuery } from "querystring";
 import Post from "../src/components/Post";
 import Header from "../src/components/Header";
@@ -17,17 +17,27 @@ const Section = styled.section`
   margin: 0 auto;
 `;
 
-const HomePage: PagePostsComp = () => {
-  const [query] = useState<string>("");
-  const { data: pageData, refetch } = ssrPosts.usePage();
+const PAGE_LIMIT = 5;
 
-  useEffect(() => {
-    if (query.length > 0) {
-      refetch({
-        q: query,
-      });
-    }
-  }, [query]);
+const HomePage: PagePostsComp = () => {
+  const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  const { data: pageData, variables, fetchMore } = ssrPosts.usePage(() => ({
+    variables: {
+      offset: 0,
+      limit: PAGE_LIMIT,
+    },
+  }));
+
+  function onLoadMore() {
+    fetchMore({
+      variables: {
+        ...variables,
+        offset: pageData?.posts?.length ?? 0,
+      },
+    }).then((fetchMoreResult) => {
+      setIsLastPage((fetchMoreResult.data.posts?.length ?? 0) < PAGE_LIMIT);
+    });
+  }
 
   return (
     <>
@@ -71,6 +81,9 @@ const HomePage: PagePostsComp = () => {
             />
           ))}
         </Section>
+        <button onClick={onLoadMore} disabled={isLastPage}>
+          More
+        </button>
       </main>
     </>
   );
@@ -79,7 +92,22 @@ const HomePage: PagePostsComp = () => {
 export const getServerSideProps: GetServerSideProps = (
   ctx: GetServerSidePropsContext<ParsedUrlQuery>
 ) => {
-  return ssrPosts.getServerPage({}, ctx);
+  return ssrPosts.getServerPage(
+    {
+      variables: {
+        offset: 0,
+        limit: PAGE_LIMIT,
+      },
+    },
+    ctx
+  );
 };
 
-export default withApollo(ssrPosts.withPage(() => ({}))(HomePage));
+export default withApollo(
+  ssrPosts.withPage(() => ({
+    variables: {
+      offset: 0,
+      limit: PAGE_LIMIT,
+    },
+  }))(HomePage)
+);

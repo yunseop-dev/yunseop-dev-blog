@@ -9,6 +9,7 @@ import {
 import { getCookie } from "./utils/cookie";
 import { isLoggedInVar } from "./graphql/cache";
 import { setContext } from "@apollo/client/link/context";
+import { offsetLimitPagination } from "@apollo/client/utilities";
 
 export const withApollo = (Comp: NextPage) => (props: any) => {
   return (
@@ -42,7 +43,15 @@ export const getApolloClient = (
       : `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_GRAPHQL_URL}`,
     fetch,
   });
-  const cache = new InMemoryCache().restore(initialState || {});
+  const cache = new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          posts: offsetLimitPagination([])
+        },
+      },
+    },
+  }).restore(initialState || {});
   return new ApolloClient({
     ssrMode: true,
     link: authLink.concat(httpLink),

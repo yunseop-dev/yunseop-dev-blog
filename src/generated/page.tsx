@@ -77,3 +77,4 @@ export const ssrPosts = {
       withPage: withPagePosts,
       usePage: usePosts,
     }
+

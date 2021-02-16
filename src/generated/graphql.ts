@@ -118,8 +118,8 @@ export type QueryPostArgs = {
 
 
 export type QueryPostsArgs = {
-  first?: Maybe<Scalars['Int']>;
-  last?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<PostOrder>;
   publishedSince?: Maybe<Scalars['DateTime']>;
   q?: Maybe<Scalars['String']>;
@@ -238,7 +238,10 @@ export type MyQuery = (
 );
 
 export type PostsQueryVariables = Exact<{
-  direction?: Maybe<OrderDirection>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<PostOrder>;
+  publishedSince?: Maybe<Scalars['DateTime']>;
   q?: Maybe<Scalars['String']>;
 }>;
 
@@ -331,8 +334,14 @@ export type MyQueryHookResult = ReturnType<typeof useMyQuery>;
 export type MyLazyQueryHookResult = ReturnType<typeof useMyLazyQuery>;
 export type MyQueryResult = Apollo.QueryResult<MyQuery, MyQueryVariables>;
 export const PostsDocument = gql`
-    query posts($direction: OrderDirection, $q: String) {
-  posts(orderBy: {field: publishedAt, direction: $direction}, q: $q) {
+    query posts($offset: Int, $limit: Int, $orderBy: PostOrder, $publishedSince: DateTime, $q: String) {
+  posts(
+    offset: $offset
+    limit: $limit
+    orderBy: $orderBy
+    publishedSince: $publishedSince
+    q: $q
+  ) {
     ...PostField
   }
 }
@@ -350,7 +359,10 @@ export const PostsDocument = gql`
  * @example
  * const { data, loading, error } = usePostsQuery({
  *   variables: {
- *      direction: // value for 'direction'
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
+ *      orderBy: // value for 'orderBy'
+ *      publishedSince: // value for 'publishedSince'
  *      q: // value for 'q'
  *   },
  * });

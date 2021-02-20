@@ -169,7 +169,7 @@ export type Mutation = {
    * Like post.
    * Returns the updated number of likes received.
    */
-  likePost: Scalars['UnsignedInt'];
+  likePost: Scalars['Boolean'];
   signUp?: Maybe<User>;
   signIn?: Maybe<Scalars['String']>;
 };
@@ -220,6 +220,16 @@ export type PostFieldFragment = (
     { __typename?: 'User' }
     & Pick<User, 'id'>
   )>>> }
+);
+
+export type LikePostMutationVariables = Exact<{
+  postId: Scalars['ID'];
+}>;
+
+
+export type LikePostMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'likePost'>
 );
 
 export type MyQueryVariables = Exact<{ [key: string]: never; }>;
@@ -294,6 +304,36 @@ export const PostFieldFragmentDoc = gql`
   }
 }
     `;
+export const LikePostDocument = gql`
+    mutation likePost($postId: ID!) {
+  likePost(postId: $postId)
+}
+    `;
+export type LikePostMutationFn = Apollo.MutationFunction<LikePostMutation, LikePostMutationVariables>;
+
+/**
+ * __useLikePostMutation__
+ *
+ * To run a mutation, you first call `useLikePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLikePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [likePostMutation, { data, loading, error }] = useLikePostMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useLikePostMutation(baseOptions?: Apollo.MutationHookOptions<LikePostMutation, LikePostMutationVariables>) {
+        return Apollo.useMutation<LikePostMutation, LikePostMutationVariables>(LikePostDocument, baseOptions);
+      }
+export type LikePostMutationHookResult = ReturnType<typeof useLikePostMutation>;
+export type LikePostMutationResult = Apollo.MutationResult<LikePostMutation>;
+export type LikePostMutationOptions = Apollo.BaseMutationOptions<LikePostMutation, LikePostMutationVariables>;
 export const MyDocument = gql`
     query my {
   my {

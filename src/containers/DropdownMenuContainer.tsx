@@ -65,4 +65,4 @@ export const getServerSideProps = async () => {
   return await ssrMy.getServerPage({});
 };
 
-export default withApollo(DropdownMenuContainer);
+export default React.memo(withApollo(DropdownMenuContainer));

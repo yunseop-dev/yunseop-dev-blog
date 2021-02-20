@@ -11,6 +11,7 @@ import DropdownMenuContainer from "../src/containers/DropdownMenuContainer";
 import { profileImage } from "../src/constants";
 import styled from "@emotion/styled";
 import TweetFormComponent from "../src/components/Tweetform";
+import useInfinityScroll from "../src/hooks/useScroll";
 
 const Section = styled.section`
   max-width: 1024px;
@@ -29,6 +30,7 @@ const HomePage: PagePostsComp = () => {
       },
     })
   );
+  useInfinityScroll(onLoadMore, !loading && !isLastPage);
 
   function onLoadMore() {
     fetchMore({
@@ -40,26 +42,6 @@ const HomePage: PagePostsComp = () => {
       setIsLastPage((fetchMoreResult.data.posts?.length ?? 0) < PAGE_LIMIT);
     });
   }
-
-  // 스크롤 이벤트 핸들러
-  const handleScroll = () => {
-    const scrollHeight = document.documentElement.scrollHeight;
-    const scrollTop = document.documentElement.scrollTop;
-    const clientHeight = document.documentElement.clientHeight;
-    if (scrollTop + clientHeight >= scrollHeight && !loading && !isLastPage) {
-      // 페이지 끝에 도달하면 추가 데이터를 받아온다
-      onLoadMore();
-    }
-  };
-
-  useEffect(() => {
-    // scroll event listener 등록
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      // scroll event listener 해제
-      window.removeEventListener("scroll", handleScroll);
-    };
-  });
 
   return (
     <>
@@ -103,9 +85,6 @@ const HomePage: PagePostsComp = () => {
             />
           ))}
         </Section>
-        {/* <button onClick={onLoadMore} disabled={isLastPage}>
-          More
-        </button> */}
       </main>
     </>
   );

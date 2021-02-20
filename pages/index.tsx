@@ -1,7 +1,7 @@
 import { PagePostsComp, ssrPosts } from "../src/generated/page";
 import { withApollo } from "../src/withApollo";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ParsedUrlQuery } from "querystring";
 import Post from "../src/components/Post";
 import Header from "../src/components/Header";
@@ -21,12 +21,14 @@ const PAGE_LIMIT = 5;
 
 const HomePage: PagePostsComp = () => {
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
-  const { data: pageData, variables, fetchMore } = ssrPosts.usePage(() => ({
-    variables: {
-      offset: 0,
-      limit: PAGE_LIMIT,
-    },
-  }));
+  const { data: pageData, variables, loading, fetchMore } = ssrPosts.usePage(
+    () => ({
+      variables: {
+        offset: 0,
+        limit: PAGE_LIMIT,
+      },
+    })
+  );
 
   function onLoadMore() {
     fetchMore({
@@ -38,6 +40,26 @@ const HomePage: PagePostsComp = () => {
       setIsLastPage((fetchMoreResult.data.posts?.length ?? 0) < PAGE_LIMIT);
     });
   }
+
+  // 스크롤 이벤트 핸들러
+  const handleScroll = () => {
+    const scrollHeight = document.documentElement.scrollHeight;
+    const scrollTop = document.documentElement.scrollTop;
+    const clientHeight = document.documentElement.clientHeight;
+    if (scrollTop + clientHeight >= scrollHeight && !loading && !isLastPage) {
+      // 페이지 끝에 도달하면 추가 데이터를 받아온다
+      onLoadMore();
+    }
+  };
+
+  useEffect(() => {
+    // scroll event listener 등록
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      // scroll event listener 해제
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
 
   return (
     <>
@@ -81,9 +103,9 @@ const HomePage: PagePostsComp = () => {
             />
           ))}
         </Section>
-        <button onClick={onLoadMore} disabled={isLastPage}>
+        {/* <button onClick={onLoadMore} disabled={isLastPage}>
           More
-        </button>
+        </button> */}
       </main>
     </>
   );

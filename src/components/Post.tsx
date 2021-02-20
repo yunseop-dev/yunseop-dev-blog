@@ -1,4 +1,12 @@
+import { useReactiveVar } from "@apollo/client";
 import styled from "@emotion/styled";
+import {
+  Account,
+  PostFieldFragment,
+  PostFieldFragmentDoc,
+  useLikePostMutation,
+} from "../generated/graphql";
+import { myInfoVar } from "../graphql/cache";
 
 export const Post = styled.div`
   background: #ffffff;
@@ -76,6 +84,7 @@ export const PostButton = styled.button`
 `;
 
 interface PostProps {
+  id: string;
   profileImage: string;
   title: string;
   subtitle: string;
@@ -84,6 +93,37 @@ interface PostProps {
 }
 
 const PostComponent = (props: PostProps) => {
+  const my: Account | null = useReactiveVar(myInfoVar);
+  // , { data, loading, error }
+  const [likePostMutation] = useLikePostMutation({
+    variables: {
+      postId: props.id,
+    },
+    update(cache, result) {
+      const data = cache.readFragment<PostFieldFragment>({
+        id: `Post:${props.id}`,
+        fragment: PostFieldFragmentDoc,
+      });
+      if (my && data) {
+        const likedBy = result.data?.likePost
+          ? [...data.likedBy, my.user]
+          : data.likedBy.filter((item) => item?.id !== my?.user.id) ?? [];
+        cache.writeFragment({
+          id: `Post:${props.id}`,
+          fragment: PostFieldFragmentDoc,
+          data: {
+            ...data,
+            likedBy,
+          },
+        });
+      }
+    },
+    onError(error) {
+      if (error.graphQLErrors?.[0]?.extensions?.code === "UNAUTHENTICATED") {
+        window.alert("로그인 해주세요");
+      }
+    },
+  });
   return (
     <Post>
       <PostHeader>
@@ -100,7 +140,7 @@ const PostComponent = (props: PostProps) => {
       <PostButtonGroup>
         <PostButton>Comment</PostButton>
         <PostButton>Retweeted</PostButton>
-        <PostButton>Liked</PostButton>
+        <PostButton onClick={() => likePostMutation()}>Liked</PostButton>
         <PostButton>Saved</PostButton>
       </PostButtonGroup>
       {/* <div>

@@ -76,6 +76,7 @@ const HomePage: PagePostsComp = () => {
             <Post
               key={item?.id}
               {...{
+                id: item?.id ?? "",
                 profileImage,
                 title: `${item?.author.firstName} ${item?.author.lastName}`,
                 subtitle: item?.publishedAt ?? "",

@@ -84,7 +84,7 @@ export type Post = {
   /** Post published timestamp. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** Users who like this post. */
-  likedBy?: Maybe<Array<Maybe<User>>>;
+  likedBy: Array<Maybe<User>>;
 };
 
 export enum OrderField {
@@ -216,10 +216,10 @@ export type PostFieldFragment = (
   & { author: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'firstName' | 'lastName'>
-  ), likedBy?: Maybe<Array<Maybe<(
+  ), likedBy: Array<Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id'>
-  )>>> }
+  )>> }
 );
 
 export type LikePostMutationVariables = Exact<{

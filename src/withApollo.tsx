@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import {
   ApolloClient,
   NormalizedCacheObject,
@@ -10,33 +10,32 @@ import { getCookie } from "./utils/cookie";
 import { isLoggedInVar } from "./graphql/cache";
 import { setContext } from "@apollo/client/link/context";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { ParsedUrlQuery } from "querystring";
 
 export const withApollo = (Comp: NextPage) => (props: any) => {
   return (
     <ApolloProvider client={getApolloClient(undefined, props.apolloState)}>
-      <Comp />
+      <Comp {...props} />
     </ApolloProvider>
   );
 };
 
-const authLink = setContext((_, { headers }) => {
-  const token = getCookie("token");
-  if (token) {
-    isLoggedInVar(true);
-  }
-
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? token : "",
-    },
-  };
-});
-
 export const getApolloClient = (
-  _: any,
+  ctx?: GetServerSidePropsContext<ParsedUrlQuery>,
   initialState?: NormalizedCacheObject
 ) => {
+  const token = getCookie("token", ctx?.req?.cookies);
+  isLoggedInVar(!!token);
+
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: token,
+      },
+    };
+  });
+
   const httpLink = createHttpLink({
     uri: process.browser
       ? process.env.NEXT_PUBLIC_GRAPHQL_URL
@@ -47,7 +46,7 @@ export const getApolloClient = (
     typePolicies: {
       Query: {
         fields: {
-          posts: offsetLimitPagination([])
+          posts: offsetLimitPagination([]),
         },
       },
     },

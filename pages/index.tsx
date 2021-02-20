@@ -1,7 +1,7 @@
 import { PagePostsComp, ssrPosts } from "../src/generated/page";
 import { withApollo } from "../src/withApollo";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ParsedUrlQuery } from "querystring";
 import Post from "../src/components/Post";
 import Header from "../src/components/Header";
@@ -105,11 +105,4 @@ export const getServerSideProps: GetServerSideProps = (
   );
 };
 
-export default withApollo(
-  ssrPosts.withPage(() => ({
-    variables: {
-      offset: 0,
-      limit: PAGE_LIMIT,
-    },
-  }))(HomePage)
-);
+export default withApollo(HomePage);

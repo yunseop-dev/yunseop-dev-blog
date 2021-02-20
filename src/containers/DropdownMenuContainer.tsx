@@ -12,23 +12,35 @@ import useModal from "../hooks/useModal";
 import { removeCookie } from "../utils/cookie";
 import { ssrMy } from "../generated/page";
 import { withApollo } from "../withApollo";
+import { Account } from "../generated/graphql";
 
 const DropdownMenuContainer = () => {
   const { isShowing, toggle: toggleModal } = useModal();
   const { isShowing: isShowingMenu, toggle: toggleMenu } = useModal();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
+  const my: Account | null = useReactiveVar(myInfoVar);
   const { data, client, refetch } = ssrMy.usePage(() => ({
     errorPolicy: "ignore",
+    onCompleted(data) {
+      myInfoVar(data.my);
+    },
     onError(error) {
       console.log(error.message);
     },
+    skip: !isLoggedIn,
   }));
 
   useEffect(() => {
-    if (!data?.my && isLoggedIn) {
+    if (data?.my) {
+      myInfoVar(data.my);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
       refetch();
     }
-  }, [data, isLoggedIn]);
+  }, [isLoggedIn]);
 
   function logout() {
     if (window.confirm("로그아웃 하시겠습니까?")) {
@@ -42,10 +54,10 @@ const DropdownMenuContainer = () => {
   return (
     <>
       <DropdownMenu
-        imageUrl={isLoggedIn ? profileImage : ""}
-        onClick={isLoggedIn ? toggleMenu : toggleModal}
+        imageUrl={my ? profileImage : ""}
+        onClick={my ? toggleMenu : toggleModal}
       >
-        {isLoggedIn ? data?.my?.user.firstName ?? "error" : "Login"}
+        {my ? my?.user.firstName ?? "error" : "Login"}
         {isShowingMenu && (
           <DropdownItems>
             <DropdownItem>My Profile</DropdownItem>

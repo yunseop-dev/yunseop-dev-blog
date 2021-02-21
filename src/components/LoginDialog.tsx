@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useReactiveVar } from "@apollo/client";
+import { useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { useSignInMutation } from "../generated/graphql";
-import { isLoggedInVar } from "../graphql/cache";
+import { ssrMy } from "../generated/page";
+import { isLoggedInVar, myInfoVar } from "../graphql/cache";
 import { setCookie } from "../utils/cookie";
 
 interface LoginDialogProps {
@@ -12,10 +14,19 @@ interface LoginDialogProps {
 ReactModal.setAppElement("#__next");
 
 const LoginDialog = ({ isShowing, hide }: LoginDialogProps) => {
-  const [signInMutation, { error }] = useSignInMutation();
-
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [signInMutation, { error }] = useSignInMutation();
+  const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
+  const { refetch } = ssrMy.usePage(() => ({
+    skip: !isLoggedIn,
+    onCompleted(data) {
+      myInfoVar(data.my);
+    },
+    onError(error) {
+      console.log(error.message);
+    },
+  }));
 
   async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,6 +45,7 @@ const LoginDialog = ({ isShowing, hide }: LoginDialogProps) => {
           hide();
         },
       });
+      await refetch();
     } catch (error) {}
   }
 

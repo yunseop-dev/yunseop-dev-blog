@@ -1,5 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
-import React, { useEffect } from "react";
+import React from "react";
 import DropdownMenu, {
   DropdownItems,
   DropdownItem,
@@ -17,37 +17,13 @@ import { Account } from "../generated/graphql";
 const DropdownMenuContainer = () => {
   const { isShowing, toggle: toggleModal } = useModal();
   const { isShowing: isShowingMenu, toggle: toggleMenu } = useModal();
-  const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const my: Account | null = useReactiveVar(myInfoVar);
-  const { data, client, refetch } = ssrMy.usePage(() => ({
-    errorPolicy: "ignore",
-    onCompleted(data) {
-      myInfoVar(data.my);
-    },
-    onError(error) {
-      console.log(error.message);
-    },
-    skip: !isLoggedIn,
-  }));
-
-  useEffect(() => {
-    if (data?.my) {
-      myInfoVar(data.my);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      refetch();
-    }
-  }, [isLoggedIn]);
 
   function logout() {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       isLoggedInVar(false);
       myInfoVar(null);
       removeCookie("token");
-      client?.resetStore();
     }
   }
 

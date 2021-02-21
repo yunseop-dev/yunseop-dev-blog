@@ -20,18 +20,21 @@ export const withApollo = (Comp: NextPage) => (props: any) => {
   );
 };
 
+const getToken = (ctx: any) => {
+  const token = getCookie("token", ctx?.req?.cookies);
+  isLoggedInVar(!!token);
+  return token;
+};
+
 export const getApolloClient = (
   ctx?: GetServerSidePropsContext<ParsedUrlQuery>,
   initialState?: NormalizedCacheObject
 ) => {
-  const token = getCookie("token", ctx?.req?.cookies);
-  isLoggedInVar(!!token);
-
   const authLink = setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
-        authorization: token,
+        authorization: getToken(ctx),
       },
     };
   });

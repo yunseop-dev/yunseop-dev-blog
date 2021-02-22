@@ -1,5 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ReactModal from "react-modal";
 import { useSignInMutation } from "../generated/graphql";
 import { ssrMy } from "../generated/page";

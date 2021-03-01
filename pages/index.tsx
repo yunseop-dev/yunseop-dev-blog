@@ -1,4 +1,5 @@
 import { PagePostsComp, ssrPosts } from "../src/generated/page";
+import { Account } from "../src/generated/graphql";
 import { withApollo } from "../src/withApollo";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import React, { useState } from "react";
@@ -12,6 +13,8 @@ import { profileImage } from "../src/constants";
 import styled from "@emotion/styled";
 import TweetFormComponent from "../src/components/Tweetform";
 import useInfinityScroll from "../src/hooks/useScroll";
+import { useReactiveVar } from "@apollo/client";
+import { myInfoVar } from "../src/graphql/cache";
 
 const Section = styled.section`
   max-width: 1024px;
@@ -22,20 +25,18 @@ const PAGE_LIMIT = 5;
 
 const HomePage: PagePostsComp = () => {
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
-  const { data: pageData, variables, loading, fetchMore } = ssrPosts.usePage(
-    () => ({
-      variables: {
-        offset: 0,
-        limit: PAGE_LIMIT,
-      },
-    })
-  );
+  const my: Account | null = useReactiveVar(myInfoVar);
+  const { data: pageData, loading, fetchMore } = ssrPosts.usePage(() => ({
+    variables: {
+      offset: 0,
+      limit: PAGE_LIMIT,
+    },
+  }));
   useInfinityScroll(onLoadMore, !loading && !isLastPage);
 
   function onLoadMore() {
     fetchMore({
       variables: {
-        ...variables,
         offset: pageData?.posts?.length ?? 0,
       },
     }).then((fetchMoreResult) => {
@@ -82,6 +83,9 @@ const HomePage: PagePostsComp = () => {
                 subtitle: item?.publishedAt ?? "",
                 content: item?.content ?? "",
                 likeCount: item?.likedBy?.length ?? 0,
+                isLiked: item?.likedBy?.findIndex?.(
+                  (user) => user?.id === my?.user.id
+                ) !== -1,
               }}
             />
           ))}

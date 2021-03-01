@@ -1,5 +1,8 @@
 import { useReactiveVar } from "@apollo/client";
 import styled from "@emotion/styled";
+import { useState } from "react";
+import { profileImage } from "../constants";
+import Input from "./Input";
 import {
   Account,
   PostFieldFragment,
@@ -90,11 +93,12 @@ interface PostProps {
   subtitle: string;
   content: string;
   likeCount: number;
+  isLiked: boolean;
 }
 
 const PostComponent = (props: PostProps) => {
   const my: Account | null = useReactiveVar(myInfoVar);
-  // , { data, loading, error }
+  const [isInputOpened, setIsInputOpened] = useState<boolean>(false);
   const [likePostMutation] = useLikePostMutation({
     variables: {
       postId: props.id,
@@ -138,15 +142,25 @@ const PostComponent = (props: PostProps) => {
         <PostCountItem>{props.likeCount ?? 0} Likes</PostCountItem>
       </PostCounts>
       <PostButtonGroup>
-        <PostButton>Comment</PostButton>
-        <PostButton>Retweeted</PostButton>
-        <PostButton onClick={() => likePostMutation()}>Liked</PostButton>
-        <PostButton>Saved</PostButton>
+        <PostButton onClick={() => likePostMutation()}>
+          {props.isLiked ? "Liked" : "Like"}
+        </PostButton>
+        <PostButton
+          onClick={() => {
+            setIsInputOpened((val) => !val);
+          }}
+        >
+          Comment
+        </PostButton>
+        {/* <PostButton>Retweeted</PostButton> */}
+        {/* <PostButton>Saved</PostButton> */}
       </PostButtonGroup>
-      {/* <div>
-        <ProfileCover src={profileImage} alt="commenter" />
-        <input type="text" />
-        </div> */}
+      {isInputOpened && (
+        <div style={{ display: "flex", margin: "1rem auto" }}>
+          <ProfileCover src={profileImage} alt="commenter" />
+          <Input type="text" placeholder="Tweet your reply" />
+        </div>
+      )}
     </Post>
   );
 };

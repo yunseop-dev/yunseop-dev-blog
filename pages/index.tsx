@@ -26,12 +26,7 @@ const PAGE_LIMIT = 5;
 const HomePage: PagePostsComp = () => {
   const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const my: Account | null = useReactiveVar(myInfoVar);
-  const { data: pageData, loading, fetchMore } = ssrPosts.usePage(() => ({
-    variables: {
-      offset: 0,
-      limit: PAGE_LIMIT,
-    },
-  }));
+  const { data: pageData, loading, fetchMore } = ssrPosts.usePage(() => ({}));
   useInfinityScroll(onLoadMore, !loading && !isLastPage);
 
   function onLoadMore() {
@@ -83,9 +78,10 @@ const HomePage: PagePostsComp = () => {
                 subtitle: item?.publishedAt ?? "",
                 content: item?.content ?? "",
                 likeCount: item?.likedBy?.length ?? 0,
-                isLiked: item?.likedBy?.findIndex?.(
-                  (user) => user?.id === my?.user.id
-                ) !== -1,
+                isLiked:
+                  item?.likedBy?.findIndex?.(
+                    (user) => user?.id === my?.user.id
+                  ) !== -1,
               }}
             />
           ))}
@@ -95,18 +91,8 @@ const HomePage: PagePostsComp = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = (
-  ctx: GetServerSidePropsContext<ParsedUrlQuery>
-) => {
-  return ssrPosts.getServerPage(
-    {
-      variables: {
-        offset: 0,
-        limit: PAGE_LIMIT,
-      },
-    },
-    ctx
-  );
+export const getServerSideProps: GetServerSideProps = (ctx: any) => {
+  return ssrPosts.getServerPage({}, ctx);
 };
 
 export default withApollo(HomePage);

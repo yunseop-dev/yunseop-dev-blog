@@ -5,7 +5,7 @@ import {
   PostsDocument,
   PostsQuery,
   PostsQueryVariables,
-  usePublishPostMutation,
+  useCreatePostMutation,
 } from "../generated/graphql";
 import { ProfileCover } from "./Post";
 
@@ -62,17 +62,17 @@ interface TweetFormComponentProps {
 
 const TweetFormComponent = ({ profileImage }: TweetFormComponentProps) => {
   const [content, setContent] = useState<string>("");
-  const [publishPostMutation] = usePublishPostMutation({
+  const [publishPostMutation] = useCreatePostMutation({
     update(cache, mutation) {
       const data = cache.readQuery<PostsQuery, PostsQueryVariables>({
         query: PostsDocument,
       });
-      if (mutation.data?.publishPost) {
+      if (mutation.data?.createPost) {
         cache.writeQuery({
           query: PostsDocument,
           data: {
             ...data,
-            posts: [mutation.data.publishPost, ...(data?.posts ?? [])],
+            posts: [mutation.data?.createPost, ...(data?.posts ?? [])],
           },
         });
         setContent("");
@@ -88,10 +88,8 @@ const TweetFormComponent = ({ profileImage }: TweetFormComponentProps) => {
         e.preventDefault();
         publishPostMutation({
           variables: {
-            input: {
-              title: "no title",
-              content,
-            },
+            title: "no title",
+            content,
           },
         });
       }}

@@ -56,9 +56,9 @@ export type Account = {
   password?: Maybe<Scalars['String']>;
 };
 
-export type UserWithToken = {
-  __typename?: 'UserWithToken';
-  user: User;
+export type AccountWithToken = {
+  __typename?: 'AccountWithToken';
+  account: Account;
   token: Scalars['String'];
 };
 
@@ -91,7 +91,7 @@ export type QueryPostArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  login: UserWithToken;
+  login: AccountWithToken;
   createPost: Post;
   deletePost: Scalars['String'];
   createComment: Post;
@@ -202,15 +202,15 @@ export type LoginMutationVariables = Exact<{
 export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
-    { __typename?: 'UserWithToken' }
-    & Pick<UserWithToken, 'token'>
-    & { user: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'firstName' | 'lastName'>
-      & { accounts?: Maybe<Array<Maybe<(
-        { __typename?: 'Account' }
-        & Pick<Account, 'id' | 'email' | 'socialType'>
-      )>>> }
+    { __typename?: 'AccountWithToken' }
+    & Pick<AccountWithToken, 'token'>
+    & { account: (
+      { __typename?: 'Account' }
+      & Pick<Account, 'id' | 'email' | 'socialType'>
+      & { user: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'firstName' | 'lastName'>
+      ) }
     ) }
   ) }
 );
@@ -333,14 +333,14 @@ export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMut
 export const LoginDocument = gql`
     mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
-    user {
+    account {
       id
-      firstName
-      lastName
-      accounts {
+      email
+      socialType
+      user {
         id
-        email
-        socialType
+        firstName
+        lastName
       }
     }
     token

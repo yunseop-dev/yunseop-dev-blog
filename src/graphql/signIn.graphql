@@ -1,13 +1,13 @@
 mutation login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
-    user {
+    account {
       id
-      firstName
-      lastName
-      accounts {
+      email
+      socialType
+      user {
         id
-        email
-        socialType
+        firstName
+        lastName
       }
     }
     token

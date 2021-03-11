@@ -104,21 +104,16 @@ const PostComponent = (props: PostProps) => {
       postId: props.id,
     },
     update(cache, result) {
+      const id = `Post:${props.id}`;
       const data = cache.readFragment<PostFieldFragment>({
-        id: `Post:${props.id}`,
+        id,
         fragment: PostFieldFragmentDoc,
       });
       if (my && data) {
-        const likedBy = result.data?.likePost
-          ? [...data.likedBy, my.user]
-          : data.likedBy.filter((item) => item?.id !== my?.user.id) ?? [];
         cache.writeFragment({
-          id: `Post:${props.id}`,
+          id,
           fragment: PostFieldFragmentDoc,
-          data: {
-            ...data,
-            likedBy,
-          },
+          data: result.data?.likePost,
         });
       }
     },

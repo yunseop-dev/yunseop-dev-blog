@@ -1,9 +1,9 @@
-import { useReactiveVar } from "@apollo/client";
+// import { useReactiveVar } from "@apollo/client";
 import { useState } from "react";
 import ReactModal from "react-modal";
 import { useLoginMutation } from "../generated/graphql";
 import { ssrMy } from "../generated/page";
-import { isLoggedInVar, myInfoVar } from "../graphql/cache";
+import { isLoggedInVar } from "../graphql/cache";
 import { setCookie } from "../utils/cookie";
 
 interface LoginDialogProps {

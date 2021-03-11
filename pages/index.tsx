@@ -1,9 +1,8 @@
 import { PagePostsComp, ssrPosts } from "../src/generated/page";
 import { Account } from "../src/generated/graphql";
 import { withApollo } from "../src/withApollo";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import React, { useState } from "react";
-import { ParsedUrlQuery } from "querystring";
+import { GetServerSideProps } from "next";
+import React from "react";
 import Post from "../src/components/Post";
 import Header from "../src/components/Header";
 import Logo from "../src/components/Logo";
@@ -12,7 +11,6 @@ import DropdownMenuContainer from "../src/containers/DropdownMenuContainer";
 import { profileImage } from "../src/constants";
 import styled from "@emotion/styled";
 import TweetFormComponent from "../src/components/Tweetform";
-import useInfinityScroll from "../src/hooks/useScroll";
 import { useReactiveVar } from "@apollo/client";
 import { myInfoVar } from "../src/graphql/cache";
 
@@ -21,23 +19,23 @@ const Section = styled.section`
   margin: 0 auto;
 `;
 
-const PAGE_LIMIT = 5;
+// const PAGE_LIMIT = 5;
 
 const HomePage: PagePostsComp = () => {
-  const [isLastPage, setIsLastPage] = useState<boolean>(false);
+  // const [isLastPage, setIsLastPage] = useState<boolean>(false);
   const my: Account | null = useReactiveVar(myInfoVar);
-  const { data: pageData, loading, fetchMore } = ssrPosts.usePage(() => ({}));
-  useInfinityScroll(onLoadMore, !loading && !isLastPage);
+  const { data: pageData } = ssrPosts.usePage(() => ({}));
+  // useInfinityScroll(onLoadMore, !loading && !isLastPage);
 
-  function onLoadMore() {
-    fetchMore({
-      variables: {
-        offset: pageData?.posts?.length ?? 0,
-      },
-    }).then((fetchMoreResult) => {
-      setIsLastPage((fetchMoreResult.data.posts?.length ?? 0) < PAGE_LIMIT);
-    });
-  }
+  // function onLoadMore() {
+  //   fetchMore({
+  //     variables: {
+  //       offset: pageData?.posts?.length ?? 0,
+  //     },
+  //   }).then((fetchMoreResult) => {
+  //     setIsLastPage((fetchMoreResult.data.posts?.length ?? 0) < PAGE_LIMIT);
+  //   });
+  // }
 
   return (
     <>

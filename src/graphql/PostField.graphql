@@ -1,14 +1,16 @@
 fragment PostField on Post {
-  id
-  title
-  content
-  publishedAt
   author {
     id
     firstName
     lastName
   }
+  content
+  id
   likedBy {
     id
+    firstName
+    lastName
   }
+  publishedAt
+  title
 }

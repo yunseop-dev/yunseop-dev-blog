@@ -1,17 +1,5 @@
-query posts(
-  $offset: Int
-  $limit: Int
-  $orderBy: PostOrder
-  $publishedSince: DateTime
-  $q: String
-) {
-  posts(
-    offset: $offset
-    limit: $limit
-    orderBy: $orderBy
-    publishedSince: $publishedSince
-    q: $q
-  ) {
+query posts {
+  posts {
     ...PostField
   }
 }

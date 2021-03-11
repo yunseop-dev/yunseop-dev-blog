@@ -1,3 +1,5 @@
 mutation likePost($postId: ID!) {
-  likePost(postId: $postId)
+  likePost(postId: $postId) {
+    ...PostField
+  }
 }

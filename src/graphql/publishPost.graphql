@@ -1,5 +1,5 @@
-mutation publishPost($input: PublishPostInput!) {
-  publishPost(input: $input) {
+mutation createPost($content: String!, $title: String!) {
+  createPost(content: $content, title: $title) {
     ...PostField
   }
 }

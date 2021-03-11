@@ -82,6 +82,7 @@ export type Query = {
   __typename?: 'Query';
   posts?: Maybe<Array<Maybe<Post>>>;
   post?: Maybe<Post>;
+  my?: Maybe<Account>;
 };
 
 
@@ -166,6 +167,21 @@ export type LikePostMutation = (
     { __typename?: 'Post' }
     & PostFieldFragment
   ) }
+);
+
+export type MyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyQuery = (
+  { __typename?: 'Query' }
+  & { my?: Maybe<(
+    { __typename?: 'Account' }
+    & Pick<Account, 'id' | 'email' | 'socialType'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'firstName' | 'lastName'>
+    ) }
+  )> }
 );
 
 export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -265,6 +281,45 @@ export function useLikePostMutation(baseOptions?: Apollo.MutationHookOptions<Lik
 export type LikePostMutationHookResult = ReturnType<typeof useLikePostMutation>;
 export type LikePostMutationResult = Apollo.MutationResult<LikePostMutation>;
 export type LikePostMutationOptions = Apollo.BaseMutationOptions<LikePostMutation, LikePostMutationVariables>;
+export const MyDocument = gql`
+    query my {
+  my {
+    id
+    email
+    socialType
+    user {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+    `;
+
+/**
+ * __useMyQuery__
+ *
+ * To run a query within a React component, call `useMyQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyQuery(baseOptions?: Apollo.QueryHookOptions<MyQuery, MyQueryVariables>) {
+        return Apollo.useQuery<MyQuery, MyQueryVariables>(MyDocument, baseOptions);
+      }
+export function useMyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyQuery, MyQueryVariables>) {
+          return Apollo.useLazyQuery<MyQuery, MyQueryVariables>(MyDocument, baseOptions);
+        }
+export type MyQueryHookResult = ReturnType<typeof useMyQuery>;
+export type MyLazyQueryHookResult = ReturnType<typeof useMyLazyQuery>;
+export type MyQueryResult = Apollo.QueryResult<MyQuery, MyQueryVariables>;
 export const PostsDocument = gql`
     query posts {
   posts {

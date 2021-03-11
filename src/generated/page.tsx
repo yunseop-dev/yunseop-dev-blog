@@ -8,6 +8,41 @@ import * as Apollo from '@apollo/client';
 import type React from 'react';
 import { getApolloClient} from '../withApollo';
 
+export async function getServerPageMy
+    (options: Omit<Apollo.QueryOptions<Types.MyQueryVariables>, 'query'>, ctx? :any ){
+        const apolloClient = getApolloClient(ctx);
+        
+        const data = await apolloClient.query<Types.MyQuery>({ ...options, query:Operations.MyDocument });
+        
+        const apolloState = apolloClient.cache.extract();
+
+        return {
+            props: {
+                apolloState,
+                data: data?.data,
+                error: data?.error ?? data?.errors ?? null,
+            },
+        };
+      }
+export const useMy = (
+  optionsFunc?: (router: NextRouter)=> QueryHookOptions<Types.MyQuery, Types.MyQueryVariables>) => {
+  const router = useRouter();
+  const options = optionsFunc ? optionsFunc(router) : {};
+  return useQuery(Operations.MyDocument, options);
+};
+export type PageMyComp = React.FC<{data?: Types.MyQuery, error?: Apollo.ApolloError}>;
+export const withPageMy = (optionsFunc?: (router: NextRouter)=> QueryHookOptions<Types.MyQuery, Types.MyQueryVariables>) => (WrappedComponent:PageMyComp) : NextPage  => (props) => {
+                const router = useRouter()
+                const options = optionsFunc ? optionsFunc(router) : {};
+                const {data, error } = useQuery(Operations.MyDocument, options)    
+                return <WrappedComponent {...props} data={data} error={error} /> ;
+                   
+            }; 
+export const ssrMy = {
+      getServerPage: getServerPageMy,
+      withPage: withPageMy,
+      usePage: useMy,
+    }
 export async function getServerPagePosts
     (options: Omit<Apollo.QueryOptions<Types.PostsQueryVariables>, 'query'>, ctx? :any ){
         const apolloClient = getApolloClient(ctx);

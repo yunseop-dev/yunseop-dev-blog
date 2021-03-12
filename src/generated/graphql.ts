@@ -30,14 +30,15 @@ export type Post = {
   author: User;
   publishedAt?: Maybe<Scalars['String']>;
   likedBy: Array<Maybe<User>>;
+  comments?: Maybe<Array<Maybe<Comment>>>;
 };
 
 export type Comment = {
   __typename?: 'Comment';
   id: Scalars['ID'];
   createdAt: Scalars['String'];
-  username: Scalars['String'];
-  body: Scalars['String'];
+  user: User;
+  content: Scalars['String'];
 };
 
 export type Like = {
@@ -149,11 +150,37 @@ export type PostFieldFragment = (
   & Pick<Post, 'content' | 'id' | 'publishedAt' | 'title'>
   & { author: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName'>
+    & UserFieldFragment
   ), likedBy: Array<Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName'>
-  )>> }
+    & UserFieldFragment
+  )>>, comments?: Maybe<Array<Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Comment, 'id' | 'createdAt' | 'content'>
+    & { user: (
+      { __typename?: 'User' }
+      & UserFieldFragment
+    ) }
+  )>>> }
+);
+
+export type UserFieldFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'firstName' | 'lastName'>
+);
+
+export type CreateCommentMutationVariables = Exact<{
+  postId: Scalars['String'];
+  content: Scalars['String'];
+}>;
+
+
+export type CreateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { createComment: (
+    { __typename?: 'Post' }
+    & PostFieldFragment
+  ) }
 );
 
 export type LikePostMutationVariables = Exact<{
@@ -231,24 +258,68 @@ export type LoginMutation = (
   ) }
 );
 
+export const UserFieldFragmentDoc = gql`
+    fragment UserField on User {
+  id
+  firstName
+  lastName
+}
+    `;
 export const PostFieldFragmentDoc = gql`
     fragment PostField on Post {
   author {
-    id
-    firstName
-    lastName
+    ...UserField
   }
   content
   id
   likedBy {
-    id
-    firstName
-    lastName
+    ...UserField
   }
   publishedAt
   title
+  comments {
+    id
+    createdAt
+    content
+    user {
+      ...UserField
+    }
+  }
 }
-    `;
+    ${UserFieldFragmentDoc}`;
+export const CreateCommentDocument = gql`
+    mutation createComment($postId: String!, $content: String!) {
+  createComment(postId: $postId, content: $content) {
+    ...PostField
+  }
+}
+    ${PostFieldFragmentDoc}`;
+export type CreateCommentMutationFn = Apollo.MutationFunction<CreateCommentMutation, CreateCommentMutationVariables>;
+
+/**
+ * __useCreateCommentMutation__
+ *
+ * To run a mutation, you first call `useCreateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCommentMutation, { data, loading, error }] = useCreateCommentMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *      content: // value for 'content'
+ *   },
+ * });
+ */
+export function useCreateCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateCommentMutation, CreateCommentMutationVariables>) {
+        return Apollo.useMutation<CreateCommentMutation, CreateCommentMutationVariables>(CreateCommentDocument, baseOptions);
+      }
+export type CreateCommentMutationHookResult = ReturnType<typeof useCreateCommentMutation>;
+export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
+export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
 export const LikePostDocument = gql`
     mutation likePost($postId: ID!) {
   likePost(postId: $postId) {

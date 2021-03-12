@@ -1,16 +1,21 @@
+
 fragment PostField on Post {
   author {
-    id
-    firstName
-    lastName
+    ...UserField
   }
   content
   id
   likedBy {
-    id
-    firstName
-    lastName
+    ...UserField
   }
   publishedAt
   title
+  comments {
+    id
+    createdAt
+    content
+    user {
+      ...UserField
+    }
+  }
 }

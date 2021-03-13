@@ -147,7 +147,7 @@ export enum CacheControlScope {
 
 export type PostFieldFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'content' | 'id' | 'publishedAt' | 'title'>
+  & Pick<Post, 'id' | 'content' | 'publishedAt' | 'title'>
   & { author: (
     { __typename?: 'User' }
     & UserFieldFragment
@@ -267,16 +267,16 @@ export const UserFieldFragmentDoc = gql`
     `;
 export const PostFieldFragmentDoc = gql`
     fragment PostField on Post {
+  id
+  content
+  publishedAt
+  title
   author {
     ...UserField
   }
-  content
-  id
   likedBy {
     ...UserField
   }
-  publishedAt
-  title
   comments {
     id
     createdAt

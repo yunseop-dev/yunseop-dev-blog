@@ -52,6 +52,16 @@ export const getApolloClient = (
           posts: offsetLimitPagination([]),
         },
       },
+      Post: {
+        fields: {
+          likedBy: {
+            merge(existing = [], incoming: any) {
+              // this part of code is depends what you actually need to do, in my case i had to save my incoming data as single object in cache
+              return { ...existing, ...incoming };
+            },
+          },
+        },
+      },
     },
   }).restore(initialState || {});
   return new ApolloClient({

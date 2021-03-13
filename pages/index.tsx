@@ -80,6 +80,7 @@ const HomePage: PagePostsComp = () => {
                   item?.likedBy?.findIndex?.(
                     (user) => user?.id === my?.user.id
                   ) !== -1,
+                comments: item?.comments
               }}
             />
           ))}

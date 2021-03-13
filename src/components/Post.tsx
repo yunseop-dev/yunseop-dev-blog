@@ -10,6 +10,7 @@ import {
   useLikePostMutation,
 } from "../generated/graphql";
 import { myInfoVar } from "../graphql/cache";
+import Comment from "./Comment";
 
 export const Post = styled.div`
   background: #ffffff;
@@ -94,6 +95,7 @@ interface PostProps {
   content: string;
   likeCount: number;
   isLiked: boolean;
+  comments: PostFieldFragment["comments"];
 }
 
 const PostComponent = (props: PostProps) => {
@@ -150,6 +152,18 @@ const PostComponent = (props: PostProps) => {
         {/* <PostButton>Retweeted</PostButton> */}
         {/* <PostButton>Saved</PostButton> */}
       </PostButtonGroup>
+      <ul>
+        {props?.comments?.map((item) => (
+          <Comment
+            {...{
+              profileImage,
+              name: `${item?.user.lastName} ${item?.user.firstName}`,
+              createdAt: item?.createdAt ?? "",
+              content: item?.content ?? "",
+            }}
+          />
+        ))}
+      </ul>
       {isInputOpened && (
         <div style={{ display: "flex", margin: "1rem auto" }}>
           <ProfileCover src={profileImage} alt="commenter" />

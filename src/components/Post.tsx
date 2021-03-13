@@ -156,6 +156,7 @@ const PostComponent = (props: PostProps) => {
         {props?.comments?.map((item) => (
           <Comment
             {...{
+              key: item?.id,
               profileImage,
               name: `${item?.user.lastName} ${item?.user.firstName}`,
               createdAt: item?.createdAt ?? "",

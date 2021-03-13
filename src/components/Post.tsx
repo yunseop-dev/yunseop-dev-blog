@@ -110,16 +110,19 @@ const PostComponent = (props: PostProps) => {
       const data = cache.readFragment<PostFieldFragment>({
         id,
         fragment: PostFieldFragmentDoc,
+        fragmentName: "PostField",
       });
       if (my && data) {
         cache.writeFragment({
           id,
           fragment: PostFieldFragmentDoc,
+          fragmentName: "PostField",
           data: result.data?.likePost,
         });
       }
     },
     onError(error) {
+      console.log(error);
       if (error.graphQLErrors?.[0]?.extensions?.code === "UNAUTHENTICATED") {
         window.alert("로그인 해주세요");
       }

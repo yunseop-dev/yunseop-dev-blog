@@ -68,8 +68,8 @@ const HomePage: PagePostsComp = () => {
         <Section>
           {pageData?.posts?.map?.((item) => (
             <Post
-              key={item?.id}
               {...{
+                key: item?.id,
                 id: item?.id ?? "",
                 profileImage,
                 title: `${item?.author.firstName} ${item?.author.lastName}`,
@@ -80,7 +80,7 @@ const HomePage: PagePostsComp = () => {
                   item?.likedBy?.findIndex?.(
                     (user) => user?.id === my?.user.id
                   ) !== -1,
-                comments: item?.comments
+                comments: item?.comments,
               }}
             />
           ))}
